@@ -1,6 +1,6 @@
 # Baba Is you
 
-*Par Anthony Fernandes et Sabrina Ouaret*
+*Par Anthony Fernandes et Gabriel Choucroun*
 
 ## Compilation et execution
 
