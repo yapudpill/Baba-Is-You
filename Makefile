@@ -2,7 +2,7 @@ CXX := g++
 CXXFLAGS := --std=c++11 -Wall -Iinclude
 LDLIBS := -lsfml-graphics -lsfml-window -lsfml-system
 
-objects := $(patsubst src/%.cpp, build/%.o, $(wildcard src/*.cpp))
+objects := $(patsubst src/%.cpp, build/%.o, $(shell find src -name "*.cpp" -type f))
 main := $(basename $(wildcard *.cpp))
 
 .PHONY: clean all
@@ -12,10 +12,8 @@ all: $(main)
 clean:
 	rm -rf build $(main)
 
-build:
-	mkdir build
-
-build/%.o: src/%.cpp include/%.hpp build
+$(objects): build/%.o: src/%.cpp include/%.hpp
+	@mkdir -p $(dir $@)
 	$(CXX) -c $(CXXFLAGS) $< -o $@
 
 $(main): %: %.cpp $(objects)
