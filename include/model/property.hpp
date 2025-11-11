@@ -10,18 +10,8 @@ class Property: public TextEntity {
   public:
     static Property &YOU, &STOP, &PUSH, &WIN;
 
-    virtual bool onEnter(const Entity &e) = 0;
-    virtual bool onStay(const Entity &e) = 0;
-
-  private:
-    class EmptyProp;
-    class Stop;
-    class Push;
-    class Win;
-    static EmptyProp hidden_you;
-    static Stop hidden_stop;
-    static Push hidden_push;
-    static Win hidden_win;
+    virtual bool onEnter(const Entity &e) const = 0;
+    virtual bool onStay(const Entity &e) const = 0;
 };
 
 #endif // PROPERTY_HPP
