@@ -19,6 +19,7 @@ class BasicEntity: public Entity {
   private:
     std::set<const Property*> properties;
     BasicEntity() = default;
+    BasicEntity(const BasicEntity&) = delete;
 };
 
 #endif // BASIC_HPP

@@ -17,6 +17,9 @@ class Entity {
     virtual void addProp(const Property &p) = 0;
     virtual void clearProp() = 0;
     virtual const std::set<const Property*> getProp() const = 0;
+
+  private:
+    Entity &operator=(const Entity&) = delete;
 };
 
 #endif // ENTITY_HPP

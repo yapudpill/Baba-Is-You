@@ -18,6 +18,7 @@ class TextEntity: public Entity {
   private:
     // !! All subclasses of TextEntity share the same propreties !!
     static std::set<const Property*> properties;
+    TextEntity(const TextEntity&) = delete;
 };
 
 #endif // TEXT_HPP
