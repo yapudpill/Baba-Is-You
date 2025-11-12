@@ -1,4 +1,5 @@
 #include "model/property.hpp"
+
 #include "model/entity.hpp"
 
 class : public Property {
@@ -19,7 +20,7 @@ class : public Property {
 class : public Property {
   bool onEnter(const Entity &e) const override { return true; }
   bool onStay(const Entity &e) const override {
-    if (e.hasProperty(Property::YOU)) {
+    if (e.hasProp(Property::YOU)) {
       // Make the game stop by winning
     }
     return true;

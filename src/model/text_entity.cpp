@@ -1,0 +1,22 @@
+#include "model/text_entity.hpp"
+#include "model/property.hpp"
+
+#include <set>
+
+std::set<const Property*> TextEntity::properties;
+
+bool TextEntity::hasProp(const Property &p) const {
+  return properties.find(&p) != properties.end();
+}
+
+void TextEntity::addProp(const Property &p) {
+  properties.insert(&p);
+}
+
+void TextEntity::clearProp() {
+  properties.clear();
+}
+
+const std::set<const Property*> TextEntity::getProp() const {
+  return properties;
+}

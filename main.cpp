@@ -15,7 +15,7 @@ int main() {
 
   g.grid[3][3].push_back(&BasicEntity::BABA);
 
-  BasicEntity::BABA.addProperty(Property::YOU);
-  std::cout << BasicEntity::BABA.hasProperty(Property::YOU) << "\n";
-  BasicEntity::BABA.delProperty(Property::YOU);
+  BasicEntity::BABA.addProp(Property::YOU);
+  std::cout << BasicEntity::BABA.hasProp(Property::YOU) << "\n";
+  BasicEntity::BABA.clearProp();
 }

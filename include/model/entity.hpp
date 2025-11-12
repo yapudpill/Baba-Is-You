@@ -13,20 +13,10 @@ Entities cannot be created or copied and must be used through static variables
 provided by subclasses. */
 class Entity {
   public:
-    void addProperty(const Property &p);
-    void delProperty(const Property &p);
-    bool hasProperty(const Property &p) const;
-    // TODO: add a way to get the list of properties without beeing able to
-    //       modify them
-
-  protected:
-    Entity() = default;
-
-  private:
-    std::set<const Property*> properties;
-
-    Entity(const Entity&) = delete;
-    Entity &operator=(const Entity&) = delete;
+    virtual bool hasProp(const Property &p) const = 0;
+    virtual void addProp(const Property &p) = 0;
+    virtual void clearProp() = 0;
+    virtual const std::set<const Property*> getProp() const = 0;
 };
 
 #endif // ENTITY_HPP
