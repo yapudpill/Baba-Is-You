@@ -19,3 +19,28 @@ int main() {
   std::cout << BasicEntity::BABA.hasProp(Property::YOU) << "\n";
   BasicEntity::BABA.clearProp();
 }
+
+void display_grid(Game &g) {
+    for(int i = 0; i < g.height; i++) {
+      for(int j = 0; j < g.width; j++) {
+        if(g.grid[i][j].empty()) {
+            std::cout << "." ;
+        }
+        else {
+          for (Entity* e : g.grid[i][j]) {
+            if (Property *p = dynamic_cast<Property*>(e)) {
+               std::cout << "P" ;
+            }
+            if (Operator *p = dynamic_cast<Operator*>(e)) {
+              std::cout << "O" ;
+            }
+            if (Noun *p = dynamic_cast<Noun*>(e)) {
+              std::cout << "N" ;
+            }
+          }
+        }
+        std::cout << " " ;
+      }
+      std::cout << std::endl;
+    }
+}
