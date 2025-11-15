@@ -4,6 +4,8 @@
 #include <vector>
 
 #include "model/entity.hpp"
+#include "model/direction.hpp"
+#include "model/property.hpp"
 
 /** Master class of the model */
 class Game final {
@@ -12,6 +14,8 @@ class Game final {
     Game(int h, int w);
     ~Game();
     std::vector<Entity*> **grid;
+
+    void move(Direction d);
 };
 
 #endif // GAME_HPP

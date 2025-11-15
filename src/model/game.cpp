@@ -1,7 +1,6 @@
 #include "model/game.hpp"
 
 #include "model/entity.hpp"
-#include "model/direction.hpp"
 #include <vector>
 
 Game::Game(int w, int h): height{h}, width{w}, grid{new std::vector<Entity*>*[h]} {
@@ -16,8 +15,39 @@ Game::~Game() {
 }
 
 // tout doux : à ajouter dans le HPP
-void move(Direction d) {
+void Game::move(Direction d) {
   // fonction appelé avec une **grid
   // regarder chaque vector d'entity et les entity qui ont la propriété YOU -> les ajouter à la case indiquer par la direction
-  // une bonne chose serait qu'on indique à move les trucs qui bougent et qu'ils bougent tout les objets du meme type d'un coup sans avoir besoin de faire une boucle
+  for(int i = 0; i < height; i++) {
+      for(int j = 0; j < width; j++) {
+          for (Entity* e : grid[i][j]) {
+            for(const Property* p : e->getProp()) {
+              if(p->onEnter(*e, d)) {
+                switch (d)
+                {
+                case Direction::Right:
+                  //enlever e de sa pos et la mettre à droite
+                  //grid[i][j].pop_back();
+                  grid[i][j+1].push_back(e);
+                  break;
+                case Direction::Left:
+                  //enlever e de sa pos et la mettre à droite
+                  break;
+                case Direction::Up:
+                  //enlever e de sa pos et la mettre à droite
+                  break;
+                case Direction::Down:
+                  //grid[i][j].pop_back();
+                  grid[i+1][j].push_back(e);
+                  //enlever e de sa pos et la mettre à droite
+                  break;
+                default:
+                  break;
+                }
+              }
+            }
+          }
+      }
+  }
+     
 }

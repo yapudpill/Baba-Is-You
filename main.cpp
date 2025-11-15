@@ -7,6 +7,7 @@
 #include "model/operator.hpp"
 #include "model/property.hpp"
 
+void display_grid(Game &g);
 int main() {
   Game g{5, 5};
   g.grid[0][0].push_back(&Noun::NBABA);
@@ -16,7 +17,10 @@ int main() {
   g.grid[3][3].push_back(&BasicEntity::BABA);
 
   BasicEntity::BABA.addProp(Property::YOU);
-  std::cout << BasicEntity::BABA.hasProp(Property::YOU) << "\n";
+  //std::cout << BasicEntity::BABA.hasProp(Property::YOU) << "\n";
+  display_grid(g);
+  g.move(Direction::Right);
+  display_grid(g);
   BasicEntity::BABA.clearProp();
 }
 
