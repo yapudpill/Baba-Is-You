@@ -32,13 +32,13 @@ void display_grid(Game &g) {
         }
         else {
           for (Entity* e : g.grid[i][j]) {
-            if (Property *p = dynamic_cast<Property*>(e)) {
+            if (dynamic_cast<Property*>(e)) {
                std::cout << "P" ;
             }
-            if (Operator *p = dynamic_cast<Operator*>(e)) {
+            if (dynamic_cast<Operator*>(e)) {
               std::cout << "O" ;
             }
-            if (Noun *p = dynamic_cast<Noun*>(e)) {
+            if (dynamic_cast<Noun*>(e)) {
               std::cout << "N" ;
             }
           }

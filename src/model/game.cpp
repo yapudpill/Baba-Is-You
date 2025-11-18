@@ -57,9 +57,9 @@ Action Game::moveAction(Direction d) const {
 }
 
 void Game::applyAction(Action a) {
-  if (!a.canMove) return;
+  if (!a.canMove()) return;
 
-  for (std::pair<coordinates, Entity*> truc : a.removed) {
+  for (std::pair<coordinates, Entity*> truc : a.toRemove()) {
     // la cellule où on doit retiter l'entité
     cell cell = grid[truc.first.first][truc.first.second];
 
@@ -70,7 +70,7 @@ void Game::applyAction(Action a) {
     cell.erase(it);
   }
 
-  for (std::pair<coordinates, Entity*> truc : a.added) {
+  for (std::pair<coordinates, Entity*> truc : a.toAdd()) {
     cell cell = grid[truc.first.first][truc.first.second];
     cell.push_back(truc.second);
   }
