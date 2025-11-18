@@ -1,6 +1,7 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -14,20 +15,21 @@ class Game final {
   public:
     using cell = std::vector<Entity*>;
 
-    const int height, width;
-    Game(int h, int w);
+    explicit Game(const std::string &path);
     ~Game();
-
-    std::vector<std::pair<coordinates, Entity*>> operator[](Property &p) const;
-
-    cell **grid;
-
+    std::vector<std::pair<coordinates, Entity*>> operator[](const Property &p) const;
+    cell &operator[](const coordinates &cds) const;
 
     Action moveAction(Direction d) const;
-    void applyAction(Action a);
+    void applyAction(const Action &a);
     void move(Direction d);
 
+    int getHeight() const { return height; }
+    int getWidth() const { return width; }
+
   private:
+    cell **grid;
+    int height, width;
     bool inBounds(coordinates cds) const;
 };
 

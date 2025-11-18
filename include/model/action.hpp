@@ -10,6 +10,8 @@
 class Action {
   public:
     Action();
+    Action(bool move, std::vector<std::pair<coordinates, Entity*>> added,
+                      std::vector<std::pair<coordinates, Entity*>> removed);
     Action operator+(const Action &other);
     Action &operator+=(const Action &other);
 
@@ -18,8 +20,6 @@ class Action {
     std::vector<std::pair<coordinates, Entity*>> toRemove() const { return removed; }
 
   private:
-    Action(bool move, std::vector<std::pair<coordinates, Entity *>> added,
-                      std::vector<std::pair<coordinates, Entity *>> removed);
     bool move;
     std::vector<std::pair<coordinates, Entity*>> added, removed;
 };
