@@ -3,14 +3,14 @@
 #include "model/basic_entity.hpp"
 #include "model/entity.hpp"
 #include "model/game.hpp"
-#include "model/noun.hpp"
+#include "model/ref_entity.hpp"
 #include "model/operator.hpp"
 #include "model/property.hpp"
 
 void display_grid(Game &g);
 int main() {
   Game g{5, 5};
-  g.grid[0][0].push_back(&Noun::NBABA);
+  g.grid[0][0].push_back(&RefEntity::NBABA);
   g.grid[0][1].push_back(&Operator::IS);
   g.grid[0][2].push_back(&Property::YOU);
 
@@ -38,7 +38,7 @@ void display_grid(Game &g) {
             if (dynamic_cast<Operator*>(e)) {
               std::cout << "O" ;
             }
-            if (dynamic_cast<Noun*>(e)) {
+            if (dynamic_cast<RefEntity*>(e)) {
               std::cout << "N" ;
             }
           }

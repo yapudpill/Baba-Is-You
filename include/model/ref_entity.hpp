@@ -1,18 +1,18 @@
-#ifndef OBJECT_HPP
-#define OBJECT_HPP
+#ifndef REF_ENTITY_HPP
+#define REF_ENTITY_HPP
 
 #include "model/entity.hpp"
 #include "model/text_entity.hpp"
 
 /* A Noun is a TextEntity that refers to a BasicEntity, compining it with
 Operators and Propreties creates rules. */
-class Noun: public TextEntity {
+class RefEntity: public TextEntity {
   public:
-    static Noun NBABA, NWALL, NFLAG, NROCK, NTEXT;
+    static RefEntity NBABA, NWALL, NFLAG, NROCK, NTEXT;
 
   private:
     Entity &ref;
-    Noun(Entity &r);
+    RefEntity(Entity &r);
 };
 
-#endif // OBJECT_HPP
+#endif // REF_ENTITY_HPP
