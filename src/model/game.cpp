@@ -1,7 +1,12 @@
 #include "model/game.hpp"
 
-#include "model/entity.hpp"
+#include <algorithm>
 #include <vector>
+
+#include "model/action.hpp"
+#include "model/entity.hpp"
+#include "model/property.hpp"
+#include "model/util.hpp"
 
 Game::Game(int w, int h): height{h}, width{w}, grid{new std::vector<Entity*>*[h]} {
   for (int i = 0; i < h; i++) {
@@ -14,40 +19,67 @@ Game::~Game() {
   delete[] grid;
 }
 
-// tout doux : à ajouter dans le HPP
-void Game::move(Direction d) {
-  // fonction appelé avec une **grid
-  // regarder chaque vector d'entity et les entity qui ont la propriété YOU -> les ajouter à la case indiquer par la direction
-  for(int i = 0; i < height; i++) {
-      for(int j = 0; j < width; j++) {
-          for (Entity* e : grid[i][j]) {
-            for(const Property* p : e->getProp()) {
-              if(p->onEnter(*e, d)) {
-                switch (d)
-                {
-                case Direction::Right:
-                  //enlever e de sa pos et la mettre à droite
-                  //grid[i][j].pop_back();
-                  grid[i][j+1].push_back(e);
-                  break;
-                case Direction::Left:
-                  //enlever e de sa pos et la mettre à droite
-                  break;
-                case Direction::Up:
-                  //enlever e de sa pos et la mettre à droite
-                  break;
-                case Direction::Down:
-                  //grid[i][j].pop_back();
-                  grid[i+1][j].push_back(e);
-                  //enlever e de sa pos et la mettre à droite
-                  break;
-                default:
-                  break;
-                }
-              }
-            }
-          }
+std::vector<std::pair<coordinates, Entity*>> Game::operator[](Property &p) const {
+  std::vector<std::pair<coordinates, Entity*>> ret;
+
+  for (int i = 0; i < height; i++) {
+    for (int j = 0; j < width; j++) {
+      for (Entity *e : grid[i][j]) {
+        if (e->hasProp(p)) {
+          ret.push_back({{i, j}, e});
+        }
       }
+    }
   }
-     
+
+  return ret;
+}
+
+// tout doux : à ajouter dans le HPP
+Action Game::moveAction(Direction d) const {
+  // fonction appelé avec une **grid
+  // regarder chaque vector d'entity et les entity qui ont la propriété
+  // YOU -> les ajouter à la case indiquer par la direction
+
+  Action a;
+  for (std::pair<coordinates, Entity *> truc : (*this)[Property::YOU]) {
+    coordinates nxt = next(truc.first, d);
+    if (!inBounds(nxt)) break;
+
+    for (Entity *e : grid[nxt.first][nxt.second]) {
+      for (const Property *p : e->getProp()) {
+        a += p->onEnter(*truc.second, d);
+      }
+    }
+  }
+
+  return a;
+}
+
+void Game::applyAction(Action a) {
+  if (!a.canMove) return;
+
+  for (std::pair<coordinates, Entity*> truc : a.removed) {
+    // la cellule où on doit retiter l'entité
+    cell cell = grid[truc.first.first][truc.first.second];
+
+    // trouver la première occurrence de cette entité
+    cell::iterator it = std::find(cell.begin(), cell.end(), truc.second);
+
+    // supprimer l'entité
+    cell.erase(it);
+  }
+
+  for (std::pair<coordinates, Entity*> truc : a.added) {
+    cell cell = grid[truc.first.first][truc.first.second];
+    cell.push_back(truc.second);
+  }
+}
+
+void Game::move(Direction d) { applyAction(moveAction(d)); }
+
+bool Game::inBounds(coordinates cds) const {
+  return
+    0 <= cds.first && cds.first < height &&
+    0 <= cds.second && cds.second < width;
 }
