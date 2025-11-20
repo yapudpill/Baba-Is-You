@@ -17,4 +17,4 @@ $(objects): build/%.o: src/%.cpp include/%.hpp
 	$(CXX) -c $(CXXFLAGS) $< -o $@
 
 $(main): %: %.cpp $(objects)
-	$(CXX) $(LDLIBS) $(CXXFLAGS) $^ -o $@
+	$(CXX) $(CXXFLAGS) $^ -o $@  $(LDLIBS) #LDLIBS à la fin, car sinon la compilation des composantes graphiques ne fonctionne pas (vraiment c'est wtf)

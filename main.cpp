@@ -7,7 +7,7 @@
 #include "model/operator.hpp"
 #include "model/property.hpp"
 
-void display_grid(Game &g);
+/*void display_grid(Game &g);
 int main() {
   Game g{5, 5};
   g.grid[0][0].push_back(&Noun::NBABA);
@@ -47,4 +47,4 @@ void display_grid(Game &g) {
       }
       std::cout << std::endl;
     }
-}
+}*/
