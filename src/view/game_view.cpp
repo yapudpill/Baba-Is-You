@@ -57,8 +57,12 @@ bool processEvents(RenderWindow& app) {
     return true;
 }
 
-int decoupage_case(int width, int height, int nb_width, int nb_height) {
-    return min(width  / nb_width, height / nb_height);
+float decoupage_case(int width, int height, int nb_width, int nb_height) {
+    return min(width / nb_width, height / nb_height);
+}
+
+float getScale(Vector2u size_texture, int size_square) {
+    return 1.0 * size_square / (1.0*(size_texture.x + size_texture.y)/2);
 }
 
 // -------------------------------------------------------------------
@@ -82,7 +86,7 @@ int main() {
     // size_screen.width  
     // size_screen.height 
     // size_screen.bitsPerPixel 
-    RenderWindow app(size_screen, "Test", Style::Default);
+    RenderWindow app(size_screen, "Test", Style::Fullscreen);
 
     // chargement dans des texteures toutes les images nécéssaires
     map<string, Texture> textureMap;
@@ -98,10 +102,19 @@ int main() {
 
     // remplissage des images dans des sprites
     vector<Sprite> mesSprites;
+    cout << size_screen.height << endl;
+    cout << size_screen.width << endl;
     cout << size_case << endl;
-    int tmp = size_case / 50;
-    cout << tmp << endl;
-    mesSprites.push_back(makeSprite(textureMap, "baba", Vector2f(tmp, tmp), Vector2f(200.f, 200.f)));
+    
+    float scale = getScale(textureMap["grenouille"].getSize(), size_case);
+    cout << scale << endl;
+    for(int i = 0; i < nb_width; i++){
+        for(int j = 0; j < nb_height; j++){
+            mesSprites.push_back(makeSprite(textureMap, "grenouille", {scale, scale}, {(float)i*size_case, (float)j*size_case}));
+            if(j == (nb_height -1) && i == (nb_width - 1)) cout << (float)i*size_case << " "<<(float)j*size_case << endl;
+        }
+    }
+    //mesSprites.push_back(makeSprite(textureMap, "grenouille", Vector2f(scale, scale), Vector2f( 0.f, 0.f)));
     //mesSprites.push_back(makeSprite(textureMap, "baba", {0.5f, 0.5f}, {200.f, 200.f}));
     //mesSprites.push_back(makeSprite(textureMap, "grenouille", Vector2f(size_case, size_case), Vector2f(size_case, size_case)));
 
