@@ -1,116 +1,102 @@
-#include <SFML/Graphics.hpp>
-#include <SFML/Window/WindowStyle.hpp>
-#include <iostream>
-//#include "view/game_view.hpp"
+#include "view/game_view.hpp"
 
-using namespace sf;
-using namespace std;
+#include "model/basic_entity.hpp"
+#include "model/entity.hpp"
+#include "model/operator.hpp"
+#include "model/ref_entity.hpp"
 
-// -------------------------------------------------------------------
-// Charge une texture dans la map : key , file
-// -------------------------------------------------------------------
-void loadTextureMap(map<string, Texture>& texMap, const vector<pair<string, string>>& files) {
-    for (const pair<string, string>& p : files) {
-        const string& key = p.first;
-        const string& filename = p.second;
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Texture.hpp>
+#include <SFML/System/Vector2.hpp>
+#include <algorithm>
+#include <map>
+#include <stdexcept>
+#include <string>
+#include <utility>
 
-        Texture tex;
-        if (!tex.loadFromFile(filename)) {
-            cout << "Erreur : impossible de charger " << filename << "\n";
-            continue;
-        }
-        texMap[key] = std::move(tex);
-    }
-}
+/**
 
-// -------------------------------------------------------------------
-// Crée un sprite à partir d'une clé de texture
-// -------------------------------------------------------------------
-Sprite makeSprite(const map<string, Texture>& texMap, const string& key, Vector2f scale, Vector2f position) {
-    Sprite s;
-    s.setTexture(texMap.at(key));
-    s.setScale(scale);
-    s.setPosition(position);
-    return s;
-}
+{"BABA", &BasicEntity::BABA},
+{"FLAG", &BasicEntity::FLAG},
+{"WALL", &BasicEntity::WALL},
+{"ROCK", &BasicEntity::ROCK},
+{"&BABA", &RefEntity::NBABA},
+{"&FLAG", &RefEntity::NFLAG},
+{"&WALL", &RefEntity::NWALL},
+{"&ROCK", &RefEntity::NROCK},
+{"YOU", &Property::YOU},
+{"WIN", &Property::WIN},
+{"STOP", &Property::STOP},
+{"PUSH", &Property::PUSH},
+{"IS", &Operator::IS}
 
-// -------------------------------------------------------------------
-// Dessine un nombre illimité de sprites
-// -------------------------------------------------------------------
-void drawSprites(RenderWindow& app, const vector<Sprite>& sprites) {
-    app.clear();
+*/
 
-    for (const auto& s : sprites)
-        app.draw(s);
+const std::map<Entity*, std::string> textures {
+  {&BasicEntity::BABA, "resource/image/baba3.png"},
+  {&BasicEntity::FLAG, "resource/image/flag.png"},
+  {&BasicEntity::WALL, "resource/image/wall.png"},
+  {&BasicEntity::ROCK, "resource/image/rock.png"},
 
-    app.display();
-}
+  {&RefEntity::NBABA, "resource/image/text.png"},
+  {&RefEntity::NFLAG, "resource/image/text.png"},
+  {&RefEntity::NWALL, "resource/image/text.png"},
+  {&RefEntity::NROCK, "resource/image/text.png"},
 
-// -------------------------------------------------------------------
-// Boucle principale d'événements
-// -------------------------------------------------------------------
-bool processEvents(RenderWindow& app) {
-    Event event;
-    while (app.pollEvent(event)) {
-        if (event.type == Event::Closed) return false;
-        if(event.type == sf::Event::Resized) {
-            sf::FloatRect view(0, 0, event.size.width, event.size.height);
-            app.setView(sf::View(view));
-        }
-    }
-    return true;
-}
+  {&Property::YOU, "resource/image/text.png"},
+  {&Property::WIN, "resource/image/text.png"},
+  {&Property::STOP, "resource/image/text.png"},
+  {&Property::PUSH, "resource/image/text.png"},
 
-float decoupage_case(int width, int height, int nb_width, int nb_height) {
-    return min(width / nb_width, height / nb_height);
-}
-
-float getScale(Vector2u size_texture, int size_square) {
-    return 1.0 * size_square / (1.0*(size_texture.x + size_texture.y)/2);
-}
-
-const vector<pair<string, string>> texturesToLoad = {
-    {"grenouille", "./include/view/image/baba3.png"},
-    {"baba", "./include/view/image/baba2.png"},
+  {&Operator::IS, "resource/image/text.png"}
 };
 
-// -------------------------------------------------------------------
-// Lancement des composantes graphiques (à mettre dans une fonction plus tard)
-// -------------------------------------------------------------------
-int main() {
-    int nb_width = 9;
-    int nb_height = 11;
+std::map<Entity*, sf::Texture> loadTexture() {
+  std::map<Entity*, sf::Texture> map;
 
-    // tout doux : compter le nombre de case dans le niveau (longueur, largeur)
-    
-    
-    // faire une fonction qui prend une direction et une taille de case et redessine baba
-    VideoMode desktop_mode = VideoMode::getDesktopMode();
-    RenderWindow app{{desktop_mode.width / 2, desktop_mode.height / 2}, "Test"};
+  for (std::pair<Entity *const, std::string> p : textures) {
+    sf::Texture tex;
+    if (!tex.loadFromFile(p.second))
+      throw std::runtime_error("Cannot load file " + p.second);
+    map[p.first] = tex;
+  }
 
-    // chargement dans des texture toutes les images nécessaires
-    map<string, Texture> textureMap;
-    loadTextureMap(textureMap, texturesToLoad);
+  return map;
+}
 
-    while (app.isOpen()) {
-        if (!processEvents(app))
-            app.close();
+std::map<Entity*, sf::Texture> textureMap{loadTexture()};
 
-        auto size = app.getSize();
-        int size_case = decoupage_case(size.x, size.y, nb_width, nb_height);
 
-        // remplissage des images dans des sprites
-        vector<Sprite> mesSprites;
 
-        float scale = getScale(textureMap["grenouille"].getSize(), size_case);
-        for(int i = 0; i < nb_width; i++){
-            for(int j = 0; j < nb_height; j++){
-                mesSprites.push_back(makeSprite(textureMap, "grenouille", {scale, scale}, {(float)i*size_case, (float)j*size_case}));
-            }
-        }
+sf::Sprite makeSprite(Entity *e, int cell_size, int x, int y) {
+  sf::Texture t{textureMap.at(e)};
+  float scale = 1. * cell_size / t.getSize().x;
 
-        drawSprites(app, mesSprites);
+  sf::Sprite s;
+  s.setTexture(textureMap.at(e));
+  s.setScale(scale, scale);
+  s.setPosition(y * cell_size, x * cell_size);
+
+  return s;
+}
+
+GameView::GameView(sf::RenderWindow &window, const Game &game):
+  window{window}, game{game} {}
+
+void GameView::draw() {
+  sf::Vector2u window_size = window.getSize();
+  unsigned int cell_size =
+    std::min(window_size.x / game.getWidth(), window_size.y / game.getHeight());
+
+  window.clear();
+
+  for (int i = 0; i < game.getHeight(); i++) {
+    for (int j = 0; j < game.getWidth(); j++) {
+      for (Entity *e : game[{i, j}]) {
+        window.draw(makeSprite(e, cell_size, i, j));
+      }
     }
+  }
 
-    return EXIT_SUCCESS;
+  window.display();
 }

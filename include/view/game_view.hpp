@@ -1,5 +1,18 @@
-#ifndef GAMEVIEW_HPP
-#define GAMEVIEW_HPP
+#ifndef GAME_VIEW_HPP
+#define GAME_VIEW_HPP
 
+#include <SFML/Graphics/RenderWindow.hpp>
 
-#endif // GAMEVIEW_HPP
+#include "model/game.hpp"
+
+class GameView {
+  public:
+    GameView(sf::RenderWindow &window, const Game &game);
+    void draw();
+
+  private:
+    sf::RenderWindow &window;
+    const Game &game;
+};
+
+#endif // GAME_VIEW_HPP

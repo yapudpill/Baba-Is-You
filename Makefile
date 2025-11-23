@@ -17,4 +17,4 @@ $(objects): build/%.o: src/%.cpp include/%.hpp
 	$(CXX) -c $(CXXFLAGS) $< -o $@
 
 $(main): %: %.cpp $(objects)
-	$(CXX) $(CXXFLAGS)  $^ -o $@ $(LDLIBS)
+	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDLIBS)
