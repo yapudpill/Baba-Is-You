@@ -82,9 +82,9 @@ int main() {
     int nb_height = 11;
 
     // tout doux : compter le nombre de case dans le niveau (longueur, largeur)
-    // découper la carte en case "fictive"
-    // construire les sprite de la taille des cases
-    // faire une fonction qui prend une direction et une taille de case et déplace baba
+    
+    
+    // faire une fonction qui prend une direction et une taille de case et redessine baba
     VideoMode desktop_mode = VideoMode::getDesktopMode();
     RenderWindow app{{desktop_mode.width / 2, desktop_mode.height / 2}, "Test"};
 
