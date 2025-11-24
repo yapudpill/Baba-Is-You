@@ -1,6 +1,6 @@
-#include "controller/game_controller.hpp"
+#include "controller/main_controller.hpp"
 
 int main() {
-  GameController gc;
+  MainController gc;
   gc.run();
 }

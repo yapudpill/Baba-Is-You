@@ -16,7 +16,7 @@ class Game final {
     using cell = std::vector<Entity*>;
 
     explicit Game(const std::string &path);
-    ~Game();
+    virtual ~Game();
     std::vector<std::pair<coordinates, Entity*>> operator[](const Property &p) const;
     cell &operator[](const coordinates &cds) const;
 
