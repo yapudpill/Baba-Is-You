@@ -1,11 +1,12 @@
 #ifndef LEVEL_CONTROLLER_HPP
 #define LEVEL_CONTROLLER_HPP
 
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <string>
+
 #include "controller/sub_controller.hpp"
 #include "model/game.hpp"
 #include "view/game_view.hpp"
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <string>
 
 class LevelController: public SubController {
   public:

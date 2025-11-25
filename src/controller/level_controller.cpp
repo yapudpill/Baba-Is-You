@@ -1,9 +1,6 @@
 #include "controller/level_controller.hpp"
 
-#include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Graphics/View.hpp>
-#include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <stdexcept>
 #include <string>

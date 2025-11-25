@@ -1,4 +1,5 @@
 #include "model/text_entity.hpp"
+
 #include "model/property.hpp"
 
 #include <set>
@@ -15,6 +16,7 @@ void TextEntity::addProp(const Property &p) {
 
 void TextEntity::clearProp() {
   properties.clear();
+  properties.insert(&Property::PUSH);
 }
 
 const std::set<const Property*> TextEntity::getProp() const {

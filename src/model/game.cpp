@@ -9,7 +9,6 @@
 #include <stdexcept>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "model/action.hpp"
 #include "model/basic_entity.hpp"

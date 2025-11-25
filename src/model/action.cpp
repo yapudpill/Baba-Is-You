@@ -1,7 +1,5 @@
 #include "model/action.hpp"
 
-#include <vector>
-
 Action::Action(bool move): move{move} {}
 
 Action::Action(local_entities added,local_entities removed):

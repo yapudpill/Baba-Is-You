@@ -1,4 +1,5 @@
 #include "model/util.hpp"
+
 #include <stdexcept>
 
 coordinates next(coordinates cds, Direction d) {

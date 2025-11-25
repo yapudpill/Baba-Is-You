@@ -1,10 +1,5 @@
 #include "view/game_view.hpp"
 
-#include "model/basic_entity.hpp"
-#include "model/entity.hpp"
-#include "model/operator.hpp"
-#include "model/ref_entity.hpp"
-
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/System/Vector2.hpp>
@@ -14,23 +9,10 @@
 #include <string>
 #include <utility>
 
-/**
-
-{"BABA", &BasicEntity::BABA},
-{"FLAG", &BasicEntity::FLAG},
-{"WALL", &BasicEntity::WALL},
-{"ROCK", &BasicEntity::ROCK},
-{"&BABA", &RefEntity::NBABA},
-{"&FLAG", &RefEntity::NFLAG},
-{"&WALL", &RefEntity::NWALL},
-{"&ROCK", &RefEntity::NROCK},
-{"YOU", &Property::YOU},
-{"WIN", &Property::WIN},
-{"STOP", &Property::STOP},
-{"PUSH", &Property::PUSH},
-{"IS", &Operator::IS}
-
-*/
+#include "model/basic_entity.hpp"
+#include "model/entity.hpp"
+#include "model/operator.hpp"
+#include "model/ref_entity.hpp"
 
 const std::map<Entity*, std::string> textures {
   {&BasicEntity::BABA, "resource/image/baba3.png"},
