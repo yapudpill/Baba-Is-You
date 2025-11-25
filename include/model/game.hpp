@@ -20,7 +20,8 @@ class Game final {
     std::vector<std::pair<coordinates, Entity*>> operator[](const Property &p) const;
     cell &operator[](const coordinates &cds) const;
 
-    Action moveAction(Direction d) const;
+    Action moveAction(Entity *entity, const coordinates &cds, Direction d) const;
+    Action stayAction() const;
     void applyAction(const Action &a);
     void move(Direction d);
 

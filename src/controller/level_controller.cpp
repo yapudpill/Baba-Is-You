@@ -25,6 +25,8 @@ Direction getDirection(sf::Keyboard::Key key) {
 LevelController::LevelController(sf::RenderWindow &window, std::string path):
   window{window}, game{path}, view{window, game} {
   BasicEntity::BABA.addProp(Property::YOU);
+  BasicEntity::ROCK.addProp(Property::PUSH);
+  BasicEntity::WALL.addProp(Property::STOP);
 }
 
 void LevelController::onResized() {

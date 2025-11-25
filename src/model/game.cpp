@@ -2,11 +2,13 @@
 
 #include <algorithm>
 #include <fstream>
+#include <iostream>
 #include <limits>
 #include <map>
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "model/action.hpp"
@@ -77,8 +79,8 @@ Game::~Game() {
   delete[] grid;
 }
 
-std::vector<std::pair<coordinates, Entity*>> Game::operator[](const Property &p) const {
-  std::vector<std::pair<coordinates, Entity*>> ret;
+local_entities Game::operator[](const Property &p) const {
+  local_entities ret;
 
   for (int i = 0; i < height; i++) {
     for (int j = 0; j < width; j++) {
@@ -97,24 +99,47 @@ Game::cell &Game::operator[](const coordinates &cds) const {
   return grid[cds.first][cds.second];
 }
 
-Action Game::moveAction(Direction d) const {
-  Action a;
-  for (std::pair<coordinates, Entity*> to_move : (*this)[Property::YOU]) {
-    coordinates nxt = next(to_move.first, d);
-    if (!inBounds(nxt)) break;
+/* Move entity 'e' currently in cell 'cds' in direction 'd' */
+Action Game::moveAction(Entity *moving, const coordinates &cds, Direction d) const {
+  coordinates nxt = next(cds, d);
+  if (!inBounds(nxt)) return {false};
 
-    a += {true, {{nxt, to_move.second}}, {to_move}};
-    for (Entity *e : (*this)[nxt]) {
-      for (const Property *p : e->getProp()) {
-        a += p->onEnter(*to_move.second, d);
-      }
+  Action a{{{nxt, moving}}, {{cds, moving}}};
+
+  // pour chaque entité 'e' sur la case d'arrivée
+  for (Entity *receiver : (*this)[nxt]) {
+    // pour chaque propriété de l'entité 'e'
+    for (const Property *p : receiver->getProp()) {
+      // indiquer à la propriété que l'entité 'to_move' entre sur la case
+      a += p->onEnter(*moving, d, *receiver, nxt, *this);
     }
   }
+
   return a;
 }
 
+Action Game::stayAction() const {
+  Action a;
+
+  for (int i = 0; i < height; i++) {
+    for (int j = 0; j < width; j++) {
+      for (Entity *e1 : (*this)[{i, j}]) {
+        for (Entity *e2 : (*this)[{i, j}]) {
+          for (const Property *p : e2->getProp()) {
+            a += p->onStay(*e1);
+          }
+        }
+      }
+    }
+  }
+
+  if (!a) throw std::logic_error("onStay returned false");
+
+  return a;
+};
+
 void Game::applyAction(const Action &a) {
-  if (!a.canMove()) return;
+  if (!a) return;
 
   for (std::pair<coordinates, Entity*> to_remove : a.toRemove()) {
     // the cell where we have to remove the entity
@@ -129,7 +154,17 @@ void Game::applyAction(const Action &a) {
   }
 }
 
-void Game::move(Direction d) { applyAction(moveAction(d)); }
+void Game::move(Direction d) {
+  Action action;
+  for (std::pair<coordinates, Entity*> to_move : (*this)[Property::YOU]) {
+    Action a = moveAction(to_move.second, to_move.first, d);
+    if (a) action += a;
+  }
+  applyAction(action);
+
+
+  applyAction(stayAction());
+}
 
 bool Game::inBounds(coordinates cds) const {
   return
