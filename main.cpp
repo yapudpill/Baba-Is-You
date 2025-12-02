@@ -1,3 +1,6 @@
+#include "controller/main_controller.hpp"
+
 int main() {
-  return 0;
+  MainController gc;
+  gc.run();
 }
