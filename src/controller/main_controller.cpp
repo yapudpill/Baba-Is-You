@@ -10,8 +10,10 @@
 #include "controller/level_controller.hpp"
 
 MainController::MainController() {
-  sf::VideoMode desktop_mode = sf::VideoMode::getDesktopMode();
-  window.create({desktop_mode.width / 2, desktop_mode.height / 2}, "Baba is you");
+  sf::VideoMode mode = sf::VideoMode::getDesktopMode();
+  mode.height = 2 * mode.height / 3;
+  mode.width = 2 * mode.width / 3;
+  window.create(mode, "Baba is you");
 
   // TODO: change this to a call to loadMenu when menu are implemented
   loadLevel("resource/level/level1");
