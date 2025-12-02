@@ -6,7 +6,7 @@
 class SubController {
   public:
     virtual ~SubController() = default;
-    virtual void onResized() = 0;
+    virtual void onResized(unsigned width, unsigned height) = 0;
     virtual void onKeyPressed(sf::Keyboard::Key code) = 0;
 };
 

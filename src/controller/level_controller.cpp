@@ -21,12 +21,14 @@ Direction getDirection(sf::Keyboard::Key key) {
 
 LevelController::LevelController(sf::RenderWindow &window, std::string path):
   window{window}, game{path}, view{window, game} {
+  // TODO: remove this
   BasicEntity::BABA.addProp(Property::YOU);
   BasicEntity::ROCK.addProp(Property::PUSH);
   BasicEntity::WALL.addProp(Property::STOP);
 }
 
-void LevelController::onResized() {
+void LevelController::onResized(unsigned width, unsigned height) {
+  view.resize(width, height);
   view.draw();
 }
 

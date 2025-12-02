@@ -11,7 +11,7 @@
 class LevelController: public SubController {
   public:
     LevelController(sf::RenderWindow &window, std::string path);
-    void onResized() override;
+    void onResized(unsigned width, unsigned height) override;
     void onKeyPressed(sf::Keyboard::Key code) override;
 
   private:

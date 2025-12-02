@@ -22,7 +22,6 @@ MainController::~MainController() {
 }
 
 void MainController::run() {
-  sf::FloatRect rect;
   sf::Event event;
   while (window.isOpen()) {
     while (window.pollEvent(event)) {
@@ -32,10 +31,7 @@ void MainController::run() {
           break;
 
         case sf::Event::Resized:
-          rect.width = event.size.width;
-          rect.height = event.size.height;
-          window.setView(sf::View{rect});
-          subController->onResized();
+          subController->onResized(event.size.width, event.size.height);
           break;
 
         case sf::Event::KeyPressed:

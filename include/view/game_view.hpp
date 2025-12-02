@@ -8,6 +8,7 @@
 class GameView {
   public:
     GameView(sf::RenderWindow &window, const Game &game);
+    void resize(unsigned width, unsigned height);
     void draw();
 
   private:
