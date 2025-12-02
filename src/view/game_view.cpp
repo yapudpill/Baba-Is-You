@@ -1,5 +1,6 @@
 #include "view/game_view.hpp"
 
+#include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/System/Vector2.hpp>
@@ -14,50 +15,49 @@
 #include "model/operator.hpp"
 #include "model/ref_entity.hpp"
 
-const std::map<Entity*, std::string> textures {
-  //{&BasicEntity::BABA, "resource/image/sprite_baba.png"},
-  {&BasicEntity::BABA, "resource/image/baba_droite.png"},
-  {&BasicEntity::FLAG, "resource/image/flag.png"},
-  {&BasicEntity::WALL, "resource/image/wall.png"},
-  {&BasicEntity::ROCK, "resource/image/rock.png"},
+sf::Color const background_color{0x54a54bff};
 
-  {&RefEntity::NBABA, "resource/image/baba_text.png"},
-  {&RefEntity::NFLAG, "resource/image/flag_textJClaire.png"},
-  {&RefEntity::NWALL, "resource/image/wall_textGris.png"},
-  {&RefEntity::NROCK, "resource/image/rock_textJaune.png"},
-
-  {&Property::YOU, "resource/image/youRose.png"},
-  {&Property::WIN, "resource/image/winC.png"},
-  {&Property::STOP, "resource/image/stopC.png"},
-  {&Property::PUSH, "resource/image/pushJ.png"},
-
-  {&Operator::IS, "resource/image/isBlanc.png"}
-};
-
-std::map<Entity*, sf::Texture> loadTexture() {
-  std::map<Entity*, sf::Texture> map;
-
-  for (std::pair<Entity *const, std::string> p : textures) {
-    sf::Texture tex;
-    if (!tex.loadFromFile(p.second))
-      throw std::runtime_error("Cannot load file " + p.second);
-    map[p.first] = tex;
-  }
-
-  return map;
+sf::Texture load_spritesheet(std::string path){
+  // Load an image file from a file
+  sf::Image img;
+  if (!img.loadFromFile(path))
+    throw std::runtime_error(path);
+  
+  img.createMaskFromColor(background_color);
+  sf::Texture t;
+  t.loadFromImage(img);
+  return t;
 }
 
-std::map<Entity*, sf::Texture> textureMap{loadTexture()};
+const sf::Texture characters {load_spritesheet("resource/image/characters.png")};
+const sf::Texture objects {load_spritesheet("resource/image/objects.png")};
+const sf::Texture texts {load_spritesheet("resource/image/texts.png")};
+const sf::Texture tiles {load_spritesheet("resource/image/tiles.png")};
 
+const std::map<Entity*, sf::Sprite> sprites {
+  {&BasicEntity::BABA, {characters, {576, 1, 24, 24}}},
+  {&BasicEntity::FLAG, {objects, {351, 226, 24, 24}}},
+  {&BasicEntity::WALL, {tiles, {476, 1501, 24, 24}}},
+  {&BasicEntity::ROCK, {objects, {851, 601, 24, 24}}},
 
+  {&RefEntity::NBABA, {characters, {551, 1, 24, 24}}},
+  {&RefEntity::NFLAG, {objects, {326, 226, 24, 24}}},
+  {&RefEntity::NWALL, {tiles, {451, 1501, 24, 24}}},
+  {&RefEntity::NROCK, {objects, {826, 601, 24, 24}}},
+
+  {&Property::YOU,  {texts, {351, 226, 24, 24}}},
+  {&Property::WIN,  {texts, {351, 1123, 24, 24}}},
+  {&Property::STOP, {texts, {276, 301, 24, 24}}},
+  {&Property::PUSH, {texts, {126, 301, 24, 24}}},
+
+  {&Operator::IS, {texts, {226, 76, 24, 24}}}
+};
 
 sf::Sprite makeSprite(Entity *e, int cell_size, int x, int y) {
-  sf::Texture t{textureMap.at(e)};
-  float scale = 1. * cell_size / t.getSize().x;
+  auto it = sprites.find(e);
+  sf::Sprite s{it->second};
 
-  sf::Sprite s;
-  s.setTexture(textureMap.at(e));
-  //s.setTextureRect(sf::IntRect(0, 0, 40, 40));
+  float scale = 1. * cell_size / s.getTextureRect().getSize().x;
   s.setScale(scale, scale);
   s.setPosition(y * cell_size, x * cell_size);
 
