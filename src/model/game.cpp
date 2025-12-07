@@ -16,6 +16,7 @@
 #include "model/operator.hpp"
 #include "model/property.hpp"
 #include "model/ref_entity.hpp"
+#include "model/text_entity.hpp"
 #include "model/util.hpp"
 
 const std::map<std::string, Entity*> getEntity {
@@ -28,6 +29,7 @@ const std::map<std::string, Entity*> getEntity {
   {"&FLAG", &RefEntity::NFLAG},
   {"&WALL", &RefEntity::NWALL},
   {"&ROCK", &RefEntity::NROCK},
+  {"&TEXT", &RefEntity::NTEXT},
 
   {"YOU", &Property::YOU},
   {"WIN", &Property::WIN},
@@ -163,6 +165,67 @@ void Game::move(Direction d) {
 
 
   applyAction(stayAction());
+}
+
+Entity *Game::getRefEntity(int i, int j) {
+  for(Entity *e : grid[i][j]) {
+    if(dynamic_cast<RefEntity *>(e)) return e;
+  }return nullptr;
+}
+Entity *Game::getProperty(int i, int j){
+  for(Entity *e : grid[i][j]) {
+    if(dynamic_cast<Property *>(e)) return e;
+  }return nullptr;
+}
+
+void Game::oncleartout() {
+  for (int i = 0; i < height; i++) {
+    for (int j = 0; j < width; j++) {
+      for (Entity *e : grid[i][j]) {
+        e->clearProp();
+      }
+    }
+  }
+}
+
+void Game::actualiseRegle() {
+  oncleartout();
+  for (int i = 0; i < height; i++) {
+    for (int j = 0; j < width; j++) {
+      for (Entity *e : grid[i][j]) {
+        //e->clearProp();
+        RefEntity::NTEXT.addProp(Property::PUSH);
+        if (dynamic_cast<Operator *>(e)) {
+          // on a trouvé un IS
+          // on veut voir si il y a une RefEntity à gauche ou au dessus
+          if(inBounds({i, j-1}) && inBounds({i, j+1})) { // case gauche
+            RefEntity * a = static_cast<RefEntity*>(getRefEntity(i, j-1));
+            Property * b = static_cast<Property*>(getProperty(i, j+1));
+
+            if(a && b) {
+              // maintenant il faut actualiser les règles
+              // faire le lien entre la RefEntity et la BasicEntity
+              // c'est ref qui fait ca et je suis debile
+              if(a == &RefEntity::NBABA) BasicEntity::BABA.addProp(*static_cast<Property*>(b));
+              if(a == &RefEntity::NWALL) BasicEntity::WALL.addProp(*static_cast<Property*>(b));
+              if(a == &RefEntity::NFLAG) BasicEntity::FLAG.addProp(*static_cast<Property*>(b));
+              if(a == &RefEntity::NROCK) BasicEntity::ROCK.addProp(*static_cast<Property*>(b));
+              if(a == &RefEntity::NTEXT); // TODO
+            }
+          }
+          if(inBounds({i-1, j}) && inBounds({i+1, j})) { // case haut
+            if(Entity *a = getRefEntity(i-1, j) ,*b = getProperty(i+1, j); a && b) {
+              if(a == &RefEntity::NBABA) BasicEntity::BABA.addProp(*static_cast<Property*>(b));
+              if(a == &RefEntity::NWALL) BasicEntity::WALL.addProp(*static_cast<Property*>(b));
+              if(a == &RefEntity::NFLAG) BasicEntity::FLAG.addProp(*static_cast<Property*>(b));
+              if(a == &RefEntity::NROCK) BasicEntity::ROCK.addProp(*static_cast<Property*>(b));
+              if(a == &RefEntity::NTEXT); // TODO
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 bool Game::inBounds(coordinates cds) const {

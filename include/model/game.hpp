@@ -7,6 +7,8 @@
 
 #include "model/action.hpp"
 #include "model/entity.hpp"
+#include "model/operator.hpp"
+#include "model/ref_entity.hpp"
 #include "model/util.hpp"
 #include "model/property.hpp"
 
@@ -24,6 +26,10 @@ class Game final {
     Action stayAction() const;
     void applyAction(const Action &a);
     void move(Direction d);
+    void actualiseRegle();
+    Entity *getRefEntity(int i, int j);
+    Entity *getProperty(int i, int j);
+    void oncleartout();
 
     int getHeight() const { return height; }
     int getWidth() const { return width; }
