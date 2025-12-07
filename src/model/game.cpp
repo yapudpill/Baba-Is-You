@@ -193,7 +193,6 @@ void Game::actualiseRegle() {
   for (int i = 0; i < height; i++) {
     for (int j = 0; j < width; j++) {
       for (Entity *e : grid[i][j]) {
-        //e->clearProp();
         RefEntity::NTEXT.addProp(Property::PUSH);
         if (dynamic_cast<Operator *>(e)) {
           // on a trouvé un IS
@@ -214,18 +213,24 @@ void Game::actualiseRegle() {
             }
           }
           if(inBounds({i-1, j}) && inBounds({i+1, j})) { // case haut
-            if(Entity *a = getRefEntity(i-1, j) ,*b = getProperty(i+1, j); a && b) {
+            RefEntity * a = static_cast<RefEntity*>(getRefEntity(i-1, j));
+            Property * b = static_cast<Property*>(getProperty(i+1, j));
+
+            if(a && b) {
+              // maintenant il faut actualiser les règles
+              // faire le lien entre la RefEntity et la BasicEntity
+              // c'est ref qui fait ca et je suis debile
               if(a == &RefEntity::NBABA) BasicEntity::BABA.addProp(*static_cast<Property*>(b));
               if(a == &RefEntity::NWALL) BasicEntity::WALL.addProp(*static_cast<Property*>(b));
               if(a == &RefEntity::NFLAG) BasicEntity::FLAG.addProp(*static_cast<Property*>(b));
               if(a == &RefEntity::NROCK) BasicEntity::ROCK.addProp(*static_cast<Property*>(b));
               if(a == &RefEntity::NTEXT); // TODO
-            }
           }
         }
       }
     }
   }
+}
 }
 
 bool Game::inBounds(coordinates cds) const {
