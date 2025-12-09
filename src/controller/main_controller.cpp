@@ -53,10 +53,10 @@ void MainController::run() {
 }
 
 void MainController::loadMenu() {
-  // TODO
+  window.close();
 }
 
 void MainController::loadLevel(std::string path) {
   delete subController;
-  subController = new LevelController{window, path};
+  subController = new LevelController{*this, window, path};
 }

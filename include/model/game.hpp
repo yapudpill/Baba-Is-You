@@ -34,6 +34,8 @@ class Game final {
     int getHeight() const { return height; }
     int getWidth() const { return width; }
 
+    mutable bool win = false;
+
   private:
     cell **grid;
     int height, width;

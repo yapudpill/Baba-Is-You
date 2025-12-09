@@ -9,7 +9,7 @@
 class : public Property {
   Action onEnter(Entity&, Direction, Entity&, const coordinates&, const Game&)
     const override { return {}; }
-  Action onStay(const Entity&) const override { return {}; }
+  Action onStay(const Entity&, const Game&) const override { return {}; }
 } hidden_you;
 
 // PUSH
@@ -17,22 +17,22 @@ class : public Property {
   Action onEnter(Entity &moving, Direction d, Entity &receiver, const coordinates &cds, const Game &game) const override {
     return game.moveAction(&receiver, cds, d);
   }
-  Action onStay(const Entity &e) const override { return {}; }
+  Action onStay(const Entity &e, const Game&) const override { return {}; }
 } hidden_push;
 
 // STOP
 class : public Property {
   Action onEnter(Entity&, Direction, Entity&, const coordinates&, const Game&)
     const override { return {false}; }
-  Action onStay(const Entity&) const override { return {}; }
+  Action onStay(const Entity&, const Game&) const override { return {}; }
 } hidden_stop;
 
 // WIN
 class : public Property {
   Action onEnter(Entity &e, Direction d, Entity&, const coordinates&, const Game &game) const override { return {}; }
-  Action onStay(const Entity &e) const override {
+  Action onStay(const Entity &e, const Game &game) const override {
     if (e.hasProp(Property::YOU)) {
-      // Make the game stop by winning
+      game.win = true;
     }
     return {};
   }

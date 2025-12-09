@@ -141,7 +141,7 @@ Action Game::stayAction() const {
       for (Entity *e1 : (*this)[{i, j}]) {
         for (Entity *e2 : (*this)[{i, j}]) {
           for (const Property *p : e2->getProp()) {
-            a += p->onStay(*e1);
+            a += p->onStay(*e1, *this);
           }
         }
       }
@@ -170,6 +170,7 @@ void Game::applyAction(const Action &a) {
 }
 
 void Game::move(Direction d) {
+  actualiseRegle();
   Action action;
   for (std::pair<coordinates, Entity*> to_move : (*this)[Property::YOU]) {
     Action a = moveAction(to_move.second, to_move.first, d);
@@ -177,7 +178,7 @@ void Game::move(Direction d) {
   }
   applyAction(action);
 
-
+  actualiseRegle();
   applyAction(stayAction());
 }
 

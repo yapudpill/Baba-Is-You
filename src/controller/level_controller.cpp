@@ -5,6 +5,8 @@
 #include <stdexcept>
 #include <string>
 
+#include "controller/main_controller.hpp"
+#include "controller/sub_controller.hpp"
 #include "model/property.hpp"
 #include "model/util.hpp"
 
@@ -18,13 +20,8 @@ Direction getDirection(sf::Keyboard::Key key) {
   }
 }
 
-LevelController::LevelController(sf::RenderWindow &window, std::string path):
-  window{window}, game{path}, view{window, game} {
-  // TODO: remove this
-  /*BasicEntity::BABA.addProp(Property::YOU);
-  BasicEntity::ROCK.addProp(Property::PUSH);
-  BasicEntity::WALL.addProp(Property::STOP);*/
-}
+LevelController::LevelController(MainController &mc, sf::RenderWindow &win, std::string path):
+  SubController{mc, win}, game{path}, view{window, game} {}
 
 void LevelController::onResized(unsigned width, unsigned height) {
   view.resize(width, height);
@@ -37,11 +34,12 @@ void LevelController::onKeyPressed(sf::Keyboard::Key code) {
     case sf::Keyboard::Right:
     case sf::Keyboard::Up:
     case sf::Keyboard::Down:
-      game.actualiseRegle();
       game.move(getDirection(code));
       view.draw();
       break;
 
     default:;
   }
+
+  if (game.win) main_controller.loadMenu();
 }
