@@ -42,6 +42,7 @@ const std::map<Entity*, sf::Sprite> sprites {
   {&RefEntity::NFLAG, {objects, {326, 226, sprite_size, sprite_size}}},
   {&RefEntity::NWALL, {tiles, {451, 1501, sprite_size, sprite_size}}},
   {&RefEntity::NROCK, {objects, {826, 601, sprite_size, sprite_size}}},
+  {&RefEntity::NTEXT, {texts, {126, 1, sprite_size, sprite_size}}},
 
   {&Property::YOU,  {texts, {351, 226, sprite_size, sprite_size}}},
   {&Property::WIN,  {texts, {351, 1123, sprite_size, sprite_size}}},
