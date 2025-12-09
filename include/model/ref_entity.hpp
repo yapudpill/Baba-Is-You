@@ -9,9 +9,9 @@ Operators and Propreties creates rules. */
 class RefEntity: public TextEntity {
   public:
     static RefEntity NBABA, NWALL, NFLAG, NROCK, NTEXT;
+    Entity &ref;
 
   private:
-    Entity &ref;
     RefEntity(Entity &r);
 };
 

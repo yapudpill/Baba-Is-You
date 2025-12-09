@@ -16,7 +16,7 @@ MainController::MainController() {
   window.create(mode, "Baba is you");
 
   // TODO: change this to a call to loadMenu when menu are implemented
-  loadLevel("resource/level/level1");
+  loadLevel("resource/level/leveltest");
 }
 
 MainController::~MainController() {

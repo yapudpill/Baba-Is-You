@@ -9,6 +9,7 @@
 #include <stdexcept>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "model/action.hpp"
 #include "model/basic_entity.hpp"
@@ -28,6 +29,7 @@ const std::map<std::string, Entity*> getEntity {
   {"&FLAG", &RefEntity::NFLAG},
   {"&WALL", &RefEntity::NWALL},
   {"&ROCK", &RefEntity::NROCK},
+  {"&TEXT", &RefEntity::NTEXT},
 
   {"YOU", &Property::YOU},
   {"WIN", &Property::WIN},
@@ -87,6 +89,20 @@ local_entities Game::operator[](const Property &p) const {
         if (e->hasProp(p)) {
           ret.push_back({{i, j}, e});
         }
+      }
+    }
+  }
+
+  return ret;
+}
+
+std::vector<coordinates> Game::operator[](const Entity *entity) const {
+  std::vector<coordinates> ret;
+
+  for (int i = 0; i < height; i++) {
+    for (int j = 0; j < width; j++) {
+      for (Entity *e : grid[i][j]) {
+        if (e == entity) ret.emplace_back(i, j);
       }
     }
   }
@@ -163,6 +179,54 @@ void Game::move(Direction d) {
 
 
   applyAction(stayAction());
+}
+
+RefEntity *Game::getRefEntity(coordinates cds) {
+  for (Entity *e : (*this)[cds]) {
+    if (RefEntity *re = dynamic_cast<RefEntity*>(e))
+      return re;
+  }
+  return nullptr;
+}
+Property *Game::getProperty(coordinates cds){
+  for (Entity *e : (*this)[cds]) {
+    if (Property *p = dynamic_cast<Property*>(e))
+      return p;
+  }
+  return nullptr;
+}
+
+void Game::clearAll() {
+  for (int i = 0; i < height; i++) {
+    for (int j = 0; j < width; j++) {
+      for (Entity *e : grid[i][j]) {
+        e->clearProp();
+      }
+    }
+  }
+}
+
+void Game::actualiseRegle() {
+  clearAll();
+  for (coordinates cds : (*this)[&Operator::IS]) {
+
+    coordinates left = next(cds, Direction::Left);
+    coordinates right = next(cds, Direction::Right);
+    coordinates up = next(cds, Direction::Up);
+    coordinates down = next(cds, Direction::Down);
+
+    if(inBounds(left) && inBounds(right)) { // horizontal
+      RefEntity *a = getRefEntity(left);
+      Property *b = getProperty(right);
+      if(a && b) a->ref.addProp(*b);
+    }
+
+    if(inBounds(up) && inBounds(down)) { // vertical
+      RefEntity * a = getRefEntity(up);
+      Property * b = getProperty(down);
+      if(a && b) a->ref.addProp(*b);
+    }
+  }
 }
 
 bool Game::inBounds(coordinates cds) const {
