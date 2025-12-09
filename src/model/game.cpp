@@ -57,12 +57,12 @@ Game::Game(const std::string &path) {
   for (int i = 0; i < height; i++) {
     if (!std::getline(file, tmp))
       throw std::runtime_error("Row count does not match the declared height");
-    std::stringstream row{tmp};
+    std::istringstream row{tmp};
 
     for (int j = 0; j < width; j++) {
       if (!std::getline(row, tmp, ',') && j != width - 1)
         throw std::runtime_error("Cell count does not match the declared width");
-      std::stringstream cell{tmp};
+      std::istringstream cell{tmp};
 
       while (cell >> tmp) {
         std::map<std::string, Entity*>::const_iterator it = getEntity.find(tmp);

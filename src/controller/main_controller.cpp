@@ -8,6 +8,7 @@
 #include <string>
 
 #include "controller/level_controller.hpp"
+#include "controller/menu_controller.hpp"
 
 MainController::MainController() {
   sf::VideoMode mode = sf::VideoMode::getDesktopMode();
@@ -15,8 +16,7 @@ MainController::MainController() {
   mode.width = 2 * mode.width / 3;
   window.create(mode, "Baba is you");
 
-  // TODO: change this to a call to loadMenu when menu are implemented
-  loadLevel("resource/level/leveltest");
+  loadMenu();
 }
 
 MainController::~MainController() {
@@ -53,7 +53,8 @@ void MainController::run() {
 }
 
 void MainController::loadMenu() {
-  window.close();
+  delete subController;
+  subController = new MenuController{*this, window};
 }
 
 void MainController::loadLevel(std::string path) {
