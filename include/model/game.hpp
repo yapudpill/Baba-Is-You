@@ -2,7 +2,6 @@
 #define GAME_HPP
 
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "model/action.hpp"
@@ -17,7 +16,7 @@ class Game final {
 
     explicit Game(const std::string &path);
     virtual ~Game();
-    std::vector<std::pair<coordinates, Entity*>> operator[](const Property &p) const;
+    local_entities operator[](const Property &p) const;
     cell &operator[](const coordinates &cds) const;
 
     Action moveAction(Entity *entity, const coordinates &cds, Direction d) const;
