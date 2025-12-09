@@ -7,7 +7,6 @@
 
 #include "model/action.hpp"
 #include "model/entity.hpp"
-#include "model/operator.hpp"
 #include "model/ref_entity.hpp"
 #include "model/util.hpp"
 #include "model/property.hpp"
@@ -19,17 +18,20 @@ class Game final {
 
     explicit Game(const std::string &path);
     virtual ~Game();
+
     std::vector<std::pair<coordinates, Entity*>> operator[](const Property &p) const;
+    std::vector<coordinates> operator[](const Entity *entity) const;
     cell &operator[](const coordinates &cds) const;
 
     Action moveAction(Entity *entity, const coordinates &cds, Direction d) const;
     Action stayAction() const;
     void applyAction(const Action &a);
     void move(Direction d);
+
     void actualiseRegle();
-    Entity *getRefEntity(int i, int j);
-    Entity *getProperty(int i, int j);
-    void oncleartout();
+    RefEntity *getRefEntity(coordinates cds);
+    Property *getProperty(coordinates cds);
+    void clearAll();
 
     int getHeight() const { return height; }
     int getWidth() const { return width; }

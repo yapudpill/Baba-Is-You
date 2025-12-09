@@ -9,6 +9,7 @@
 #include <stdexcept>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "model/action.hpp"
 #include "model/basic_entity.hpp"
@@ -16,7 +17,6 @@
 #include "model/operator.hpp"
 #include "model/property.hpp"
 #include "model/ref_entity.hpp"
-#include "model/text_entity.hpp"
 #include "model/util.hpp"
 
 const std::map<std::string, Entity*> getEntity {
@@ -96,6 +96,20 @@ local_entities Game::operator[](const Property &p) const {
   return ret;
 }
 
+std::vector<coordinates> Game::operator[](const Entity *entity) const {
+  std::vector<coordinates> ret;
+
+  for (int i = 0; i < height; i++) {
+    for (int j = 0; j < width; j++) {
+      for (Entity *e : grid[i][j]) {
+        if (e == entity) ret.emplace_back(i, j);
+      }
+    }
+  }
+
+  return ret;
+}
+
 Game::cell &Game::operator[](const coordinates &cds) const {
   return grid[cds.first][cds.second];
 }
@@ -167,18 +181,22 @@ void Game::move(Direction d) {
   applyAction(stayAction());
 }
 
-Entity *Game::getRefEntity(int i, int j) {
-  for(Entity *e : grid[i][j]) {
-    if(dynamic_cast<RefEntity *>(e)) return e;
-  }return nullptr;
+RefEntity *Game::getRefEntity(coordinates cds) {
+  for (Entity *e : (*this)[cds]) {
+    if (RefEntity *re = dynamic_cast<RefEntity*>(e))
+      return re;
+  }
+  return nullptr;
 }
-Entity *Game::getProperty(int i, int j){
-  for(Entity *e : grid[i][j]) {
-    if(dynamic_cast<Property *>(e)) return e;
-  }return nullptr;
+Property *Game::getProperty(coordinates cds){
+  for (Entity *e : (*this)[cds]) {
+    if (Property *p = dynamic_cast<Property*>(e))
+      return p;
+  }
+  return nullptr;
 }
 
-void Game::oncleartout() {
+void Game::clearAll() {
   for (int i = 0; i < height; i++) {
     for (int j = 0; j < width; j++) {
       for (Entity *e : grid[i][j]) {
@@ -189,48 +207,26 @@ void Game::oncleartout() {
 }
 
 void Game::actualiseRegle() {
-  oncleartout();
-  for (int i = 0; i < height; i++) {
-    for (int j = 0; j < width; j++) {
-      for (Entity *e : grid[i][j]) {
-        RefEntity::NTEXT.addProp(Property::PUSH);
-        if (dynamic_cast<Operator *>(e)) {
-          // on a trouvé un IS
-          // on veut voir si il y a une RefEntity à gauche ou au dessus
-          if(inBounds({i, j-1}) && inBounds({i, j+1})) { // case gauche
-            RefEntity * a = static_cast<RefEntity*>(getRefEntity(i, j-1));
-            Property * b = static_cast<Property*>(getProperty(i, j+1));
+  clearAll();
+  for (coordinates cds : (*this)[&Operator::IS]) {
 
-            if(a && b) {
-              // maintenant il faut actualiser les règles
-              // faire le lien entre la RefEntity et la BasicEntity
-              // c'est ref qui fait ca et je suis debile
-              if(a == &RefEntity::NBABA) BasicEntity::BABA.addProp(*static_cast<Property*>(b));
-              if(a == &RefEntity::NWALL) BasicEntity::WALL.addProp(*static_cast<Property*>(b));
-              if(a == &RefEntity::NFLAG) BasicEntity::FLAG.addProp(*static_cast<Property*>(b));
-              if(a == &RefEntity::NROCK) BasicEntity::ROCK.addProp(*static_cast<Property*>(b));
-              if(a == &RefEntity::NTEXT); // TODO
-            }
-          }
-          if(inBounds({i-1, j}) && inBounds({i+1, j})) { // case haut
-            RefEntity * a = static_cast<RefEntity*>(getRefEntity(i-1, j));
-            Property * b = static_cast<Property*>(getProperty(i+1, j));
+    coordinates left = next(cds, Direction::Left);
+    coordinates right = next(cds, Direction::Right);
+    coordinates up = next(cds, Direction::Up);
+    coordinates down = next(cds, Direction::Down);
 
-            if(a && b) {
-              // maintenant il faut actualiser les règles
-              // faire le lien entre la RefEntity et la BasicEntity
-              // c'est ref qui fait ca et je suis debile
-              if(a == &RefEntity::NBABA) BasicEntity::BABA.addProp(*static_cast<Property*>(b));
-              if(a == &RefEntity::NWALL) BasicEntity::WALL.addProp(*static_cast<Property*>(b));
-              if(a == &RefEntity::NFLAG) BasicEntity::FLAG.addProp(*static_cast<Property*>(b));
-              if(a == &RefEntity::NROCK) BasicEntity::ROCK.addProp(*static_cast<Property*>(b));
-              if(a == &RefEntity::NTEXT); // TODO
-          }
-        }
-      }
+    if(inBounds(left) && inBounds(right)) { // horizontal
+      RefEntity *a = getRefEntity(left);
+      Property *b = getProperty(right);
+      if(a && b) a->ref.addProp(*b);
+    }
+
+    if(inBounds(up) && inBounds(down)) { // vertical
+      RefEntity * a = getRefEntity(up);
+      Property * b = getProperty(down);
+      if(a && b) a->ref.addProp(*b);
     }
   }
-}
 }
 
 bool Game::inBounds(coordinates cds) const {

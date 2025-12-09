@@ -5,7 +5,6 @@
 #include <stdexcept>
 #include <string>
 
-#include "model/basic_entity.hpp"
 #include "model/property.hpp"
 #include "model/util.hpp"
 
