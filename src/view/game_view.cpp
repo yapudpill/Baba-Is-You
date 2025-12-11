@@ -53,10 +53,9 @@ const std::map<Entity*, sf::Sprite> sprites {
 };
 
 GameView::GameView(sf::RenderWindow &window, const Game &game):
-    window{window}, game{game} {
-  float view_width = sprite_size * game.getWidth();
-  float view_height = sprite_size * game.getHeight();
-  window.setView(sf::View{{0, 0, view_width, view_height}});
+    window{window}, game{game}, view_width{1.f * sprite_size * game.getWidth()},
+    view_height{1.f * sprite_size * game.getHeight()} {
+  resize(window.getSize().x, window.getSize().y);
 }
 
 void GameView::draw() {
@@ -65,7 +64,7 @@ void GameView::draw() {
   for (int i = 0; i < game.getHeight(); i++) {
     for (int j = 0; j < game.getWidth(); j++) {
       for (Entity *e : game[{i, j}]) {
-        auto it = sprites.find(e);
+        std::map<Entity*, sf::Sprite>::const_iterator it = sprites.find(e);
         if (it == sprites.end()) throw std::logic_error("cannot find sprite");
         sf::Sprite s{it->second};
         s.setPosition(j * sprite_size, i * sprite_size);
@@ -77,17 +76,12 @@ void GameView::draw() {
   window.display();
 }
 
-void GameView::resize(unsigned width, unsigned height) {
-  sf::View win_view = window.getView();
+void GameView::resize(unsigned win_w, unsigned win_h) {
+  sf::View win_view{{0, 0, view_width, view_height}};
 
-  float win_w = window.getSize().x;
-  float win_h = window.getSize().y;
-  float view_w = win_view.getSize().x;
-  float view_h = win_view.getSize().y;
-
-  float ratio = std::min(win_w / view_w, win_h / view_h);
-  float viewport_w = ratio * view_w / win_w;
-  float viewport_h = ratio * view_h / win_h;
+  float ratio = std::min(win_w / view_width, win_h / view_height);
+  float viewport_w = ratio * view_width / win_w;
+  float viewport_h = ratio * view_height / win_h;
 
   win_view.setViewport({(1 - viewport_w) / 2, (1 - viewport_h) / 2, viewport_w, viewport_h});
   window.setView(win_view);

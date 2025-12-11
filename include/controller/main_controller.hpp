@@ -16,8 +16,10 @@ class MainController {
     void loadLevel(std::string path);
 
   private:
-    sf::RenderWindow window;
     SubController *subController = nullptr;
+    sf::RenderWindow window;
+    bool fullscreen;
+    void setFullscreen(bool fs);
 };
 
 #endif // MAIN_CONTROLLER_HPP

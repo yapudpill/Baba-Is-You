@@ -21,7 +21,9 @@ Direction getDirection(sf::Keyboard::Key key) {
 }
 
 LevelController::LevelController(MainController &mc, sf::RenderWindow &win, std::string path):
-  SubController{mc, win}, game{path}, view{window, game} {}
+    SubController{mc, win}, game{path}, view{window, game} {
+  view.draw();
+}
 
 void LevelController::onResized(unsigned width, unsigned height) {
   view.resize(width, height);
