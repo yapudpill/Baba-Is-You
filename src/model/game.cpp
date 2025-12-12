@@ -24,12 +24,16 @@ const std::map<std::string, Entity*> getEntity {
   {"FLAG", &BasicEntity::FLAG},
   {"WALL", &BasicEntity::WALL},
   {"ROCK", &BasicEntity::ROCK},
+  {"GRASS", &BasicEntity::GRASS},
+  {"TILE", &BasicEntity::TILE},
 
   {"&BABA", &RefEntity::NBABA},
   {"&FLAG", &RefEntity::NFLAG},
   {"&WALL", &RefEntity::NWALL},
   {"&ROCK", &RefEntity::NROCK},
   {"&TEXT", &RefEntity::NTEXT},
+  {"&GRASS", &RefEntity::NGRASS},
+  {"&TILE", &RefEntity::NTILE},
 
   {"YOU", &Property::YOU},
   {"WIN", &Property::WIN},

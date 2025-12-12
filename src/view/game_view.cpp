@@ -7,13 +7,17 @@
 #include <map>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 #include "model/basic_entity.hpp"
 #include "model/entity.hpp"
 #include "model/operator.hpp"
 #include "model/ref_entity.hpp"
 
-const sf::Color background_color{0x54a54bff};
+const std::vector<sf::Color> background_colors{
+  sf::Color{0x54a54bff},
+  sf::Color{0x1b5999ff}
+};
 const unsigned sprite_size{24};
 
 sf::Texture load_spritesheet(std::string path){
@@ -21,7 +25,9 @@ sf::Texture load_spritesheet(std::string path){
   if (!img.loadFromFile(path))
     throw std::runtime_error(path);
 
-  img.createMaskFromColor(background_color);
+  for (sf::Color col : background_colors) {
+    img.createMaskFromColor(col);
+  }
   sf::Texture t;
   t.loadFromImage(img);
   return t;
@@ -35,14 +41,17 @@ const sf::Texture tiles{load_spritesheet("resource/image/tiles.png")};
 const std::map<Entity*, sf::Sprite> sprites {
   {&BasicEntity::BABA, {characters, {576, 1, sprite_size, sprite_size}}},
   {&BasicEntity::FLAG, {objects, {351, 226, sprite_size, sprite_size}}},
-  {&BasicEntity::WALL, {tiles, {476, 1501, sprite_size, sprite_size}}},
   {&BasicEntity::ROCK, {objects, {851, 601, sprite_size, sprite_size}}},
+  {&BasicEntity::TILE, {objects, {101, 826, sprite_size, sprite_size}}},
+  {&BasicEntity::WALL, {tiles, {476, 1501, sprite_size, sprite_size}}},
+  {&BasicEntity::GRASS, {tiles, {476, 676, sprite_size, sprite_size}}},
 
   {&RefEntity::NBABA, {characters, {551, 1, sprite_size, sprite_size}}},
   {&RefEntity::NFLAG, {objects, {326, 226, sprite_size, sprite_size}}},
-  {&RefEntity::NWALL, {tiles, {451, 1501, sprite_size, sprite_size}}},
   {&RefEntity::NROCK, {objects, {826, 601, sprite_size, sprite_size}}},
-  {&RefEntity::NTEXT, {texts, {126, 1, sprite_size, sprite_size}}},
+  {&RefEntity::NTILE, {objects, {76, 826, sprite_size, sprite_size}}},
+  {&RefEntity::NWALL, {tiles, {451, 1501, sprite_size, sprite_size}}},
+  {&RefEntity::NGRASS, {tiles, {451, 676, sprite_size, sprite_size}}},
 
   {&Property::YOU,  {texts, {351, 226, sprite_size, sprite_size}}},
   {&Property::WIN,  {texts, {351, 1123, sprite_size, sprite_size}}},

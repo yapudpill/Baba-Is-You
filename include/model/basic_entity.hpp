@@ -9,7 +9,7 @@
 Rock, Water... */
 class BasicEntity: public Entity {
   public:
-    static BasicEntity BABA, ROCK, WALL, FLAG;
+    static BasicEntity BABA, ROCK, WALL, FLAG, GRASS, TILE;
 
     bool hasProp(const Property &p) const override;
     void addProp(const Property &p) override;

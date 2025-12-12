@@ -2,7 +2,12 @@
 
 #include "model/property.hpp"
 
-BasicEntity BasicEntity::BABA, BasicEntity::ROCK, BasicEntity::FLAG, BasicEntity::WALL;
+BasicEntity BasicEntity::BABA,
+            BasicEntity::ROCK,
+            BasicEntity::FLAG,
+            BasicEntity::WALL,
+            BasicEntity::GRASS,
+            BasicEntity::TILE;
 
 bool BasicEntity::hasProp(const Property &p) const {
   return properties.find(&p) != properties.end();
