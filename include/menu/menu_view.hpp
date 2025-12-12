@@ -13,13 +13,13 @@ class MenuView {
     void draw();
 
     void moveSelection(Direction d);
-    unsigned getSelection() const { return selected; }
+    int getSelection() const { return selected; }
 
   private:
     sf::RenderWindow &window;
     const float view_width, view_height;
     const std::vector<std::string> &choices;
-    unsigned selected = 0;
+    int selected = 0;
 };
 
 #endif // MENU_VIEW_HPP
