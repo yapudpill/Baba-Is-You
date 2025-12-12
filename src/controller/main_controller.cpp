@@ -10,11 +10,11 @@
 #include <string>
 
 #include "controller/level_controller.hpp"
-#include "controller/menu_controller.hpp"
+#include "menu/menu_controller.hpp"
 
 MainController::MainController() {
   setFullscreen(false);
-  loadLevel("resource/level/leveltest");
+  loadMenu();
 }
 
 MainController::~MainController() {

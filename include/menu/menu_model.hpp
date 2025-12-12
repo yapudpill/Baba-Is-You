@@ -2,7 +2,6 @@
 #define MENU_MODEL_HPP
 
 #include <string>
-#include <utility>
 #include <vector>
 
 class MenuModel {
@@ -10,14 +9,13 @@ class MenuModel {
     static const std::string prefix;
 
     MenuModel();
-    void move(int nb);
 
-    const std::vector<std::pair<std::string, std::string>> &getLevels() const { return levels; }
-    std::string get();
+    const std::vector<std::string> &getNames() const { return names; }
+    std::string getPath(unsigned index) const;
 
   private:
-    std::vector<std::pair<std::string, std::string>> levels;
-    decltype(levels)::const_iterator pos;
+    std::vector<std::string> names;
+    std::vector<std::string> paths;
 };
 
 #endif // MENU_MODEL_HPP

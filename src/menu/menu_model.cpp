@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 
 const std::string MenuModel::prefix = "resource/level/";
@@ -15,21 +16,16 @@ MenuModel::MenuModel() {
     std::istringstream line{l};
 
     std::string name, path;
-    std::getline(line, name, ',');
-    std::getline(line, path, ',');
+    if (!std::getline(line, name, ','))
+      throw std::runtime_error("Missing level name");
+    if (!std::getline(line, path, ','))
+      throw std::runtime_error("Missing level path");
 
-    levels.emplace_back(name, prefix + path);
+    names.push_back(name);
+    paths.push_back(path);
   }
-
-  pos = levels.cbegin();
 }
 
-void MenuModel::move(int nb) {
-  pos += nb;
-  if (pos < levels.begin()) pos = levels.begin();
-  else if (pos >= levels.end()) pos = levels.end() - 1;
-}
-
-std::string MenuModel::get() {
-  return pos->second;
+std::string MenuModel::getPath(unsigned index) const {
+  return prefix + paths[index];
 }

@@ -1,18 +1,25 @@
 #ifndef MENU_VIEW_HPP
 #define MENU_VIEW_HPP
 
+#include "model/util.hpp"
 #include <SFML/Graphics/RenderWindow.hpp>
-
-#include "menu/menu_model.hpp"
+#include <string>
+#include <vector>
 
 class MenuView {
   public:
-    MenuView(sf::RenderWindow &win, const MenuModel &m);
+    MenuView(sf::RenderWindow &win, const std::vector<std::string> &choices);
+    void resize(unsigned win_w, unsigned win_h);
     void draw();
+
+    void moveSelection(Direction d);
+    unsigned getSelection() const { return selected; }
 
   private:
     sf::RenderWindow &window;
-    const MenuModel &model;
+    const float view_width, view_height;
+    const std::vector<std::string> &choices;
+    unsigned selected = 0;
 };
 
 #endif // MENU_VIEW_HPP
