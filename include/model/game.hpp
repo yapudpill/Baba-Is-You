@@ -6,6 +6,7 @@
 
 #include "model/action.hpp"
 #include "model/entity.hpp"
+#include "model/history.hpp"
 #include "model/ref_entity.hpp"
 #include "model/util.hpp"
 #include "model/property.hpp"
@@ -26,6 +27,9 @@ class Game final {
     void applyAction(const Action &a);
     void move(Direction d);
 
+    void undo();
+    void redo();
+
     void actualiseRegle();
     RefEntity *getRefEntity(coordinates cds);
     Property *getProperty(coordinates cds);
@@ -37,6 +41,7 @@ class Game final {
     mutable bool win = false;
 
   private:
+    History history;
     cell **grid;
     int height, width;
     bool inBounds(coordinates cds) const;

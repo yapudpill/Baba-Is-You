@@ -174,16 +174,23 @@ void Game::applyAction(const Action &a) {
 }
 
 void Game::move(Direction d) {
-  actualiseRegle();
-  Action action;
-  for (std::pair<coordinates, Entity*> to_move : (*this)[Property::YOU]) {
-    Action a = moveAction(to_move.second, to_move.first, d);
-    if (a) action += a;
-  }
-  applyAction(action);
+  Action total;
 
   actualiseRegle();
-  applyAction(stayAction());
+  Action move_action;
+  for (std::pair<coordinates, Entity*> to_move : (*this)[Property::YOU]) {
+    Action a = moveAction(to_move.second, to_move.first, d);
+    if (a) move_action += a;
+  }
+  applyAction(move_action);
+  total += move_action;
+
+  actualiseRegle();
+  Action stay_action{stayAction()};
+  applyAction(stay_action);
+  total += stay_action;
+
+  history.registerAction(total);
 }
 
 RefEntity *Game::getRefEntity(coordinates cds) {
@@ -238,4 +245,12 @@ bool Game::inBounds(coordinates cds) const {
   return
     0 <= cds.first && cds.first < height &&
     0 <= cds.second && cds.second < width;
+}
+
+void Game::undo() {
+  applyAction(history.undoAction());
+}
+
+void Game::redo() {
+  applyAction(history.redoAction());
 }

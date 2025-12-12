@@ -15,6 +15,7 @@ class Action {
     operator bool() const { return move; }
     local_entities toAdd() const { return added; }
     local_entities toRemove() const { return removed; }
+    Action reverse();
 
   private:
     bool move = true;

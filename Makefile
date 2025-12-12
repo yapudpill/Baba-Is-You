@@ -12,6 +12,9 @@ all: $(main)
 clean:
 	rm -rf build $(main)
 
+run: clean all
+	./main
+
 $(objects): build/%.o: src/%.cpp include/%.hpp
 	@mkdir -p $(dir $@)
 	$(CXX) -c $(CXXFLAGS) $< -o $@

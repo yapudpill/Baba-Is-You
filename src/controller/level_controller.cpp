@@ -29,6 +29,16 @@ void LevelController::onKeyPressed(sf::Keyboard::Key code) {
       view.draw();
       break;
 
+    case sf::Keyboard::Z:
+      game.undo();
+      view.draw();
+      break;
+
+    case sf::Keyboard::Y:
+      game.redo();
+      view.draw();
+      break;
+
     default:;
   }
 

@@ -1,4 +1,5 @@
 #include "model/action.hpp"
+#include <utility>
 
 Action::Action(bool move): move{move} {}
 
@@ -25,4 +26,10 @@ Action &Action::operator+=(const Action &other) {
     removed.insert(removed.end(), other.removed.begin(), other.removed.end());
   }
   return *this;
+}
+
+Action Action::reverse() {
+  Action copy{*this};
+  std::swap(copy.added, copy.removed);
+  return copy;
 }
