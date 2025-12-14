@@ -11,8 +11,10 @@
 
 #include "model/basic_entity.hpp"
 #include "model/entity.hpp"
+#include "model/grid.hpp"
 #include "model/operator.hpp"
 #include "model/ref_entity.hpp"
+#include "model/property.hpp"
 
 const std::vector<sf::Color> background_colors{
   sf::Color{0x54a54bff},
@@ -38,7 +40,7 @@ const sf::Texture objects{load_spritesheet("resource/image/objects.png")};
 const sf::Texture texts{load_spritesheet("resource/image/texts.png")};
 const sf::Texture tiles{load_spritesheet("resource/image/tiles.png")};
 
-const std::map<Entity*, sf::Sprite> sprites {
+const std::map<const Entity*, sf::Sprite> sprites {
   {&BasicEntity::BABA, {characters, {576, 1, sprite_size, sprite_size}}},
   {&BasicEntity::FLAG, {objects, {351, 226, sprite_size, sprite_size}}},
   {&BasicEntity::ROCK, {objects, {851, 601, sprite_size, sprite_size}}},
@@ -52,6 +54,7 @@ const std::map<Entity*, sf::Sprite> sprites {
   {&RefEntity::NTILE, {objects, {76, 826, sprite_size, sprite_size}}},
   {&RefEntity::NWALL, {tiles, {451, 1501, sprite_size, sprite_size}}},
   {&RefEntity::NGRASS, {tiles, {451, 676, sprite_size, sprite_size}}},
+  {&RefEntity::NTEXT, {texts, {126, 1, sprite_size, sprite_size}}},
 
   {&Property::YOU,  {texts, {351, 226, sprite_size, sprite_size}}},
   {&Property::WIN,  {texts, {351, 1123, sprite_size, sprite_size}}},
@@ -61,19 +64,19 @@ const std::map<Entity*, sf::Sprite> sprites {
   {&Operator::IS, {texts, {226, 76, sprite_size, sprite_size}}}
 };
 
-GameView::GameView(sf::RenderWindow &window, const Game &game):
-    window{window}, game{game}, view_width{1.f * sprite_size * game.getWidth()},
-    view_height{1.f * sprite_size * game.getHeight()} {
+GameView::GameView(sf::RenderWindow &window, const Grid &grid):
+    window{window}, grid{grid}, view_width{1.f * sprite_size * grid.getWidth()},
+    view_height{1.f * sprite_size * grid.getHeight()} {
   resize(window.getSize().x, window.getSize().y);
 }
 
 void GameView::draw() {
   window.clear();
 
-  for (int i = 0; i < game.getHeight(); i++) {
-    for (int j = 0; j < game.getWidth(); j++) {
-      for (Entity *e : game[{i, j}]) {
-        std::map<Entity*, sf::Sprite>::const_iterator it = sprites.find(e);
+  for (unsigned i = 0; i < grid.getHeight(); i++) {
+    for (unsigned j = 0; j < grid.getWidth(); j++) {
+      for (const Entity *e : grid(i, j)) {
+        std::map<const Entity*, sf::Sprite>::const_iterator it = sprites.find(e);
         if (it == sprites.end()) throw std::logic_error("cannot find sprite");
         sf::Sprite s{it->second};
         s.setPosition(j * sprite_size, i * sprite_size);

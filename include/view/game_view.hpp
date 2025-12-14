@@ -3,17 +3,17 @@
 
 #include <SFML/Graphics/RenderWindow.hpp>
 
-#include "model/game.hpp"
+#include "model/grid.hpp"
 
 class GameView {
   public:
-    GameView(sf::RenderWindow &window, const Game &game);
+    GameView(sf::RenderWindow &window, const Grid &game);
     void resize(unsigned win_w, unsigned win_h);
     void draw();
 
   private:
     sf::RenderWindow &window;
-    const Game &game;
+    const Grid &grid;
     const float view_width, view_height;
 };
 

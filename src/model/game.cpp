@@ -47,23 +47,21 @@ Game::Game(const std::string &path) {
   std::ifstream file{path};
   if (!file) throw std::runtime_error("Failed to open file: " + path);
 
+  unsigned height, width;
   if (!(file >> height >> width))
     throw std::runtime_error("Invalid or missing dimensions");
   // ignore the rest of the first line
   file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-  grid = new cell*[height];
-  for (int i = 0; i < height; i++) {
-    grid[i] = new cell[width];
-  }
+  grid = {height, width};
 
   std::string tmp;
-  for (int i = 0; i < height; i++) {
+  for (unsigned i = 0; i < height; i++) {
     if (!std::getline(file, tmp))
       throw std::runtime_error("Row count does not match the declared height");
     std::istringstream row{tmp};
 
-    for (int j = 0; j < width; j++) {
+    for (unsigned j = 0; j < width; j++) {
       if (!std::getline(row, tmp, ',') && j != width - 1)
         throw std::runtime_error("Cell count does not match the declared width");
       std::istringstream cell{tmp};
@@ -73,60 +71,21 @@ Game::Game(const std::string &path) {
         if (it == getEntity.end())
           throw std::runtime_error("Unknown block ID: " + tmp);
 
-        grid[i][j].push_back(it->second);
+        grid(i, j).push_back(it->second);
       }
     }
   }
-}
-
-Game::~Game() {
-  for (int i = 0; i < height; i++) delete[] grid[i];
-  delete[] grid;
-}
-
-local_entities Game::operator[](const Property &p) const {
-  local_entities ret;
-
-  for (int i = 0; i < height; i++) {
-    for (int j = 0; j < width; j++) {
-      for (Entity *e : grid[i][j]) {
-        if (e->hasProp(p)) {
-          ret.push_back({{i, j}, e});
-        }
-      }
-    }
-  }
-
-  return ret;
-}
-
-std::vector<coordinates> Game::operator[](const Entity *entity) const {
-  std::vector<coordinates> ret;
-
-  for (int i = 0; i < height; i++) {
-    for (int j = 0; j < width; j++) {
-      for (Entity *e : grid[i][j]) {
-        if (e == entity) ret.emplace_back(i, j);
-      }
-    }
-  }
-
-  return ret;
-}
-
-Game::cell &Game::operator[](const coordinates &cds) const {
-  return grid[cds.first][cds.second];
 }
 
 /* Move entity 'e' currently in cell 'cds' in direction 'd' */
-Action Game::moveAction(Entity *moving, const coordinates &cds, Direction d) const {
+Action Game::moveAction(Entity *moving, const coordinates &cds, Direction d) {
   coordinates nxt = next(cds, d);
-  if (!inBounds(nxt)) return {false};
+  if (!grid.inBounds(nxt)) return {false};
 
   Action a{{{nxt, moving}}, {{cds, moving}}};
 
   // pour chaque entité 'e' sur la case d'arrivée
-  for (Entity *receiver : (*this)[nxt]) {
+  for (Entity *receiver : grid[nxt]) {
     // pour chaque propriété de l'entité 'e'
     for (const Property *p : receiver->getProp()) {
       // indiquer à la propriété que l'entité 'to_move' entre sur la case
@@ -137,13 +96,13 @@ Action Game::moveAction(Entity *moving, const coordinates &cds, Direction d) con
   return a;
 }
 
-Action Game::stayAction() const {
+Action Game::stayAction() {
   Action a;
 
-  for (int i = 0; i < height; i++) {
-    for (int j = 0; j < width; j++) {
-      for (Entity *e1 : (*this)[{i, j}]) {
-        for (Entity *e2 : (*this)[{i, j}]) {
+  for (unsigned i = 0; i < grid.getHeight(); i++) {
+    for (unsigned j = 0; j < grid.getWidth(); j++) {
+      for (Entity *e1 : grid(i, j)) {
+        for (Entity *e2 : grid(i, j)) {
           for (const Property *p : e2->getProp()) {
             a += p->onStay(*e1, *this);
           }
@@ -160,16 +119,16 @@ Action Game::stayAction() const {
 void Game::applyAction(const Action &a) {
   if (!a) return;
 
-  for (std::pair<coordinates, Entity*> to_remove : a.toRemove()) {
+  for (local_entity to_remove : a.toRemove()) {
     // the cell where we have to remove the entity
-    cell &cell = (*this)[to_remove.first];
+    cell &cell = grid[to_remove.first];
 
     // find the first occurrence of the entity and remove it
     cell.erase(std::find(cell.begin(), cell.end(), to_remove.second));
   }
 
-  for (std::pair<coordinates, Entity*> to_add : a.toAdd()) {
-    (*this)[to_add.first].push_back(to_add.second);
+  for (local_entity to_add : a.toAdd()) {
+    grid[to_add.first].push_back(to_add.second);
   }
 }
 
@@ -178,7 +137,7 @@ void Game::move(Direction d) {
 
   actualiseRegle();
   Action move_action;
-  for (std::pair<coordinates, Entity*> to_move : (*this)[Property::YOU]) {
+  for (local_entity to_move : grid[Property::YOU]) {
     Action a = moveAction(to_move.second, to_move.first, d);
     if (a) move_action += a;
   }
@@ -193,25 +152,10 @@ void Game::move(Direction d) {
   history.registerAction(total);
 }
 
-RefEntity *Game::getRefEntity(coordinates cds) {
-  for (Entity *e : (*this)[cds]) {
-    if (RefEntity *re = dynamic_cast<RefEntity*>(e))
-      return re;
-  }
-  return nullptr;
-}
-Property *Game::getProperty(coordinates cds){
-  for (Entity *e : (*this)[cds]) {
-    if (Property *p = dynamic_cast<Property*>(e))
-      return p;
-  }
-  return nullptr;
-}
-
 void Game::clearAll() {
-  for (int i = 0; i < height; i++) {
-    for (int j = 0; j < width; j++) {
-      for (Entity *e : grid[i][j]) {
+  for (unsigned i = 0; i < grid.getHeight(); i++) {
+    for (unsigned j = 0; j < grid.getWidth(); j++) {
+      for (Entity *e : grid(i, j)) {
         e->clearProp();
       }
     }
@@ -220,31 +164,25 @@ void Game::clearAll() {
 
 void Game::actualiseRegle() {
   clearAll();
-  for (coordinates cds : (*this)[&Operator::IS]) {
+  for (coordinates cds : grid[&Operator::IS]) {
 
     coordinates left = next(cds, Direction::Left);
     coordinates right = next(cds, Direction::Right);
     coordinates up = next(cds, Direction::Up);
     coordinates down = next(cds, Direction::Down);
 
-    if(inBounds(left) && inBounds(right)) { // horizontal
-      RefEntity *a = getRefEntity(left);
-      Property *b = getProperty(right);
+    if(grid.inBounds(left) && grid.inBounds(right)) { // horizontal
+      RefEntity *a = grid.getRefEntity(left);
+      Property *b = grid.getProperty(right);
       if(a && b) a->ref.addProp(*b);
     }
 
-    if(inBounds(up) && inBounds(down)) { // vertical
-      RefEntity * a = getRefEntity(up);
-      Property * b = getProperty(down);
+    if(grid.inBounds(up) && grid.inBounds(down)) { // vertical
+      RefEntity * a = grid.getRefEntity(up);
+      Property * b = grid.getProperty(down);
       if(a && b) a->ref.addProp(*b);
     }
   }
-}
-
-bool Game::inBounds(coordinates cds) const {
-  return
-    0 <= cds.first && cds.first < height &&
-    0 <= cds.second && cds.second < width;
 }
 
 void Game::undo() {

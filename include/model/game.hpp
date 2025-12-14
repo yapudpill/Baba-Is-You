@@ -6,8 +6,8 @@
 
 #include "model/action.hpp"
 #include "model/entity.hpp"
+#include "model/grid.hpp"
 #include "model/history.hpp"
-#include "model/ref_entity.hpp"
 #include "model/util.hpp"
 #include "model/property.hpp"
 
@@ -17,13 +17,11 @@ class Game final {
     using cell = std::vector<Entity*>;
 
     explicit Game(const std::string &path);
-    virtual ~Game();
-    local_entities operator[](const Property &p) const;
-    std::vector<coordinates> operator[](const Entity *entity) const;
-    cell &operator[](const coordinates &cds) const;
 
-    Action moveAction(Entity *entity, const coordinates &cds, Direction d) const;
-    Action stayAction() const;
+    const Grid &getGrid() const { return grid; }
+
+    Action moveAction(Entity *entity, const coordinates &cds, Direction d);
+    Action stayAction();
     void applyAction(const Action &a);
     void move(Direction d);
 
@@ -31,20 +29,13 @@ class Game final {
     void redo();
 
     void actualiseRegle();
-    RefEntity *getRefEntity(coordinates cds);
-    Property *getProperty(coordinates cds);
     void clearAll();
-
-    int getHeight() const { return height; }
-    int getWidth() const { return width; }
 
     mutable bool win = false;
 
   private:
     History history;
-    cell **grid;
-    int height, width;
-    bool inBounds(coordinates cds) const;
+    Grid grid;
 };
 
 #endif // GAME_HPP

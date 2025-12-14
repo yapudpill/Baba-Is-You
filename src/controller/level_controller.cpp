@@ -10,7 +10,7 @@
 #include "model/property.hpp"
 
 LevelController::LevelController(MainController &mc, sf::RenderWindow &win, std::string path):
-    SubController{mc, win}, game{path}, view{window, game} {
+    SubController{mc, win}, game{path}, view{window, game.getGrid()} {
   view.draw();
 }
 

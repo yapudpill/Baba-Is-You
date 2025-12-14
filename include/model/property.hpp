@@ -19,8 +19,8 @@ class Property: public TextEntity {
       Direction d,
       Entity &receiver,
       const coordinates &cds,
-      const Game &game) const = 0;
-    virtual Action onStay(const Entity &e, const Game &game) const = 0;
+      Game &game) const = 0;
+    virtual Action onStay(Entity &e, Game &game) const = 0;
 };
 
 #endif // PROPERTY_HPP
