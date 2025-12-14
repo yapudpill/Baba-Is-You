@@ -43,9 +43,7 @@ Grid &Grid::operator=(Grid &&other) {
 }
 
 bool Grid::inBounds(unsigned i, unsigned j) const {
-  return
-    0 <= i && i < height &&
-    0 <= j && j < width;
+  return i < height && j < width;
 }
 
 bool Grid::inBounds(const coordinates &cds) const {

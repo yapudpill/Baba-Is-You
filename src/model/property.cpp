@@ -14,10 +14,10 @@ class : public Property {
 
 // PUSH
 class : public Property {
-  Action onEnter(Entity &moving, Direction d, Entity &receiver, const coordinates &cds, Game &game) const override {
+  Action onEnter(Entity&, Direction d, Entity &receiver, const coordinates &cds, Game &game) const override {
     return game.moveAction(&receiver, cds, d);
   }
-  Action onStay(Entity &e, Game&) const override { return {}; }
+  Action onStay(Entity&, Game&) const override { return {}; }
 } hidden_push;
 
 // STOP
@@ -29,7 +29,7 @@ class : public Property {
 
 // WIN
 class : public Property {
-  Action onEnter(Entity &e, Direction d, Entity&, const coordinates&, Game &game) const override { return {}; }
+  Action onEnter(Entity&, Direction, Entity&, const coordinates&, Game&) const override { return {}; }
   Action onStay(Entity &e, Game &game) const override {
     if (e.hasProp(Property::YOU)) {
       game.win = true;
