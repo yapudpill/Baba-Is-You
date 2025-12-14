@@ -32,7 +32,7 @@ const unsigned logo_w{logo_texture.getSize().x}, logo_h{logo_texture.getSize().y
 const sf::Sprite logo{logo_texture};
 
 const sf::Font font = loadFont("resource/fonts/NotoSans-Regular.ttf");
-const unsigned char_size = 40;
+const unsigned char_size = 60;
 const int lines{5};
 
 // TODO: find how to define view_width and view_height properly
@@ -60,11 +60,12 @@ void MenuView::draw() {
 
   sf::Text t{"", font, char_size};
 
-  for (int i = std::max(0, selected - lines / 2);
-      i < std::min(static_cast<int>(choices.size()), selected + lines /2);
-      i++) {
-    t.setString(choices[i]);
-    t.setPosition({0, logo_h + 1.5f * char_size * i});
+  int k = 0;
+  for (int i = selected - lines / 2; i <= selected + lines / 2; i++, k++) {
+    int j = (i % int(choices.size()) + int(choices.size())) % int(choices.size());
+    //std::cerr << "i = " << i << ", i % choices.size() = " << i % choices.size() << "\n";
+    t.setString(choices[j]);
+    t.setPosition({0, logo_h + 1.5f * char_size * k});
     if (i == selected) {
       t.setFillColor(sf::Color::Red);
       t.setStyle(sf::Text::Bold);
@@ -82,12 +83,14 @@ void MenuView::moveSelection(Direction d) {
   switch (d) {
     case Direction::Down:
     case Direction::Left:
-      if (selected < static_cast<int>(choices.size()) - 1) selected++;
+      selected++;
+      selected %= choices.size();
       break;
 
     case Direction::Up:
     case Direction::Right:
-      if (selected > 0) selected--;
+      selected--;
+      if (selected < 0) selected += choices.size();
       break;
   }
 }
