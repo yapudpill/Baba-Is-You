@@ -1,25 +1,24 @@
 #ifndef MENU_VIEW_HPP
 #define MENU_VIEW_HPP
 
-#include "model/util.hpp"
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <string>
-#include <vector>
+#include <SFML/Graphics/RenderStates.hpp>
+#include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/View.hpp>
 
-class MenuView {
+#include "menu/menu_model.hpp"
+#include "view/view.hpp"
+
+class MenuView: public View {
   public:
-    MenuView(sf::RenderWindow &win, const std::vector<std::string> &choices);
-    void resize(unsigned win_w, unsigned win_h);
-    void draw();
-
-    void moveSelection(Direction d);
-    int getSelection() const { return selected; }
+    MenuView(const MenuModel &m);
+    void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
   private:
-    sf::RenderWindow &window;
-    const float view_width, view_height;
-    const std::vector<std::string> &choices;
-    int selected = 0;
+    int radius;
+    unsigned char_size;
+    float line_height, menu_height;
+    const MenuModel &model;
+    void drawChoices(sf::RenderTarget &target) const;
 };
 
 #endif // MENU_VIEW_HPP

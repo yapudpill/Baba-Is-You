@@ -1,8 +1,11 @@
 #include "view/game_view.hpp"
 
 #include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/RenderStates.hpp>
+#include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics/View.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <map>
 #include <stdexcept>
@@ -20,12 +23,12 @@ const std::vector<sf::Color> background_colors{
   sf::Color{0x54a54bff},
   sf::Color{0x1b5999ff}
 };
-const unsigned sprite_size{24};
+const std::string prefix = "resource/image/";
 
-sf::Texture load_spritesheet(std::string path){
+sf::Texture load_spritesheet(std::string name) {
   sf::Image img;
-  if (!img.loadFromFile(path))
-    throw std::runtime_error(path);
+  if (!img.loadFromFile(prefix + name))
+    throw std::runtime_error("Cannot load sprite sheet " + name);
 
   for (sf::Color col : background_colors) {
     img.createMaskFromColor(col);
@@ -35,66 +38,50 @@ sf::Texture load_spritesheet(std::string path){
   return t;
 }
 
-const sf::Texture characters{load_spritesheet("resource/image/characters.png")};
-const sf::Texture objects{load_spritesheet("resource/image/objects.png")};
-const sf::Texture texts{load_spritesheet("resource/image/texts.png")};
-const sf::Texture tiles{load_spritesheet("resource/image/tiles.png")};
+const sf::Texture characters = load_spritesheet("characters.png");
+const sf::Texture objects = load_spritesheet("objects.png");
+const sf::Texture texts = load_spritesheet("texts.png");
+const sf::Texture tiles = load_spritesheet("tiles.png");
 
+const sf::Vector2i sprite_size{24, 24};
 const std::map<const Entity*, sf::Sprite> sprites {
-  {&BasicEntity::BABA, {characters, {576, 1, sprite_size, sprite_size}}},
-  {&BasicEntity::FLAG, {objects, {351, 226, sprite_size, sprite_size}}},
-  {&BasicEntity::ROCK, {objects, {851, 601, sprite_size, sprite_size}}},
-  {&BasicEntity::TILE, {objects, {101, 826, sprite_size, sprite_size}}},
-  {&BasicEntity::WALL, {tiles, {476, 1501, sprite_size, sprite_size}}},
-  {&BasicEntity::GRASS, {tiles, {476, 676, sprite_size, sprite_size}}},
+  {&BasicEntity::BABA, {characters, {{576, 1}, sprite_size}}},
+  {&BasicEntity::FLAG, {objects, {{351, 226}, sprite_size}}},
+  {&BasicEntity::ROCK, {objects, {{851, 601}, sprite_size}}},
+  {&BasicEntity::TILE, {objects, {{101, 826}, sprite_size}}},
+  {&BasicEntity::WALL, {tiles, {{476, 1501}, sprite_size}}},
+  {&BasicEntity::GRASS, {tiles, {{476, 676}, sprite_size}}},
 
-  {&RefEntity::NBABA, {characters, {551, 1, sprite_size, sprite_size}}},
-  {&RefEntity::NFLAG, {objects, {326, 226, sprite_size, sprite_size}}},
-  {&RefEntity::NROCK, {objects, {826, 601, sprite_size, sprite_size}}},
-  {&RefEntity::NTILE, {objects, {76, 826, sprite_size, sprite_size}}},
-  {&RefEntity::NWALL, {tiles, {451, 1501, sprite_size, sprite_size}}},
-  {&RefEntity::NGRASS, {tiles, {451, 676, sprite_size, sprite_size}}},
-  {&RefEntity::NTEXT, {texts, {126, 1, sprite_size, sprite_size}}},
+  {&RefEntity::NBABA, {characters, {{551, 1}, sprite_size}}},
+  {&RefEntity::NFLAG, {objects, {{326, 226}, sprite_size}}},
+  {&RefEntity::NROCK, {objects, {{826, 601}, sprite_size}}},
+  {&RefEntity::NTILE, {objects, {{76, 826}, sprite_size}}},
+  {&RefEntity::NWALL, {tiles, {{451, 1501}, sprite_size}}},
+  {&RefEntity::NGRASS, {tiles, {{451, 676}, sprite_size}}},
+  {&RefEntity::NTEXT, {texts, {{126, 1}, sprite_size}}},
 
-  {&Property::YOU,  {texts, {351, 226, sprite_size, sprite_size}}},
-  {&Property::WIN,  {texts, {351, 1123, sprite_size, sprite_size}}},
-  {&Property::STOP, {texts, {276, 301, sprite_size, sprite_size}}},
-  {&Property::PUSH, {texts, {126, 301, sprite_size, sprite_size}}},
+  {&Property::YOU,  {texts, {{351, 226}, sprite_size}}},
+  {&Property::WIN,  {texts, {{351, 1123}, sprite_size}}},
+  {&Property::STOP, {texts, {{276, 301}, sprite_size}}},
+  {&Property::PUSH, {texts, {{126, 301}, sprite_size}}},
 
-  {&Operator::IS, {texts, {226, 76, sprite_size, sprite_size}}}
+  {&Operator::IS, {texts, {{226, 76}, sprite_size}}}
 };
 
-GameView::GameView(sf::RenderWindow &window, const Grid &grid):
-    window{window}, grid{grid}, view_width{1.f * sprite_size * grid.getWidth()},
-    view_height{1.f * sprite_size * grid.getHeight()} {
-  resize(window.getSize().x, window.getSize().y);
-}
+GameView::GameView(const Grid &grid):
+  View(sprite_size.x * grid.getWidth(), sprite_size.y * grid.getHeight()),
+  grid{grid} {}
 
-void GameView::draw() {
-  window.clear();
-
+void GameView::draw(sf::RenderTarget &target, sf::RenderStates states) const {
   for (unsigned i = 0; i < grid.getHeight(); i++) {
     for (unsigned j = 0; j < grid.getWidth(); j++) {
       for (const Entity *e : grid(i, j)) {
         std::map<const Entity*, sf::Sprite>::const_iterator it = sprites.find(e);
-        if (it == sprites.end()) throw std::logic_error("cannot find sprite");
+        if (it == sprites.end()) throw std::logic_error("Cannot find sprite");
         sf::Sprite s{it->second};
-        s.setPosition(j * sprite_size, i * sprite_size);
-        window.draw(s);
+        s.setPosition(j * sprite_size.y, i * sprite_size.x);
+        target.draw(s, states);
       }
     }
   }
-
-  window.display();
-}
-
-void GameView::resize(unsigned win_w, unsigned win_h) {
-  sf::View win_view{{0, 0, view_width, view_height}};
-
-  float ratio = std::min(win_w / view_width, win_h / view_height);
-  float viewport_w = ratio * view_width / win_w;
-  float viewport_h = ratio * view_height / win_h;
-
-  win_view.setViewport({(1 - viewport_w) / 2, (1 - viewport_h) / 2, viewport_w, viewport_h});
-  window.setView(win_view);
 }

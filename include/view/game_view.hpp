@@ -1,20 +1,21 @@
 #ifndef GAME_VIEW_HPP
 #define GAME_VIEW_HPP
 
+#include <SFML/Graphics/RenderStates.hpp>
+#include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/View.hpp>
 
 #include "model/grid.hpp"
+#include "view/view.hpp"
 
-class GameView {
+class GameView: public View {
   public:
-    GameView(sf::RenderWindow &window, const Grid &game);
-    void resize(unsigned win_w, unsigned win_h);
-    void draw();
+    GameView(const Grid &game);
+    void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
   private:
-    sf::RenderWindow &window;
     const Grid &grid;
-    const float view_width, view_height;
 };
 
 #endif // GAME_VIEW_HPP

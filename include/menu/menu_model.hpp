@@ -6,16 +6,16 @@
 
 class MenuModel {
   public:
-    static const std::string prefix;
-
     MenuModel();
 
-    const std::vector<std::string> &getNames() const { return names; }
-    std::string getPath(unsigned index) const;
+    void moveSelected(int amount);
+    const std::string &getAroundSelected(int offset) const;
+    const std::string &getPath() const;
 
   private:
     std::vector<std::string> names;
     std::vector<std::string> paths;
+    int selected_index = 0;
 };
 
 #endif // MENU_MODEL_HPP
