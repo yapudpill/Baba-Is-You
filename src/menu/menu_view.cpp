@@ -70,6 +70,10 @@ void MenuView::drawChoices(sf::RenderTarget &target) const {
       t.setFillColor(sf::Color{0xBBBBBBFF}); // Light grey
       t.setStyle(sf::Text::Regular);
     }
+
+    // center the text
+    sf::Vector2f text_size = t.getGlobalBounds().getSize();
+    t.setPosition((target.getSize().x - text_size.x) / 2, t.getPosition().y);
     target.draw(t);
   }
 }
