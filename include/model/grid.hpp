@@ -29,7 +29,7 @@ class Grid final {
     const cell operator()(unsigned i, unsigned j) const;
     const cell operator[](coordinates cds) const;
 
-    local_entities operator[](const Property &p);
+    local_blocks operator[](const Property &p);
     std::vector<coordinates> operator[](const Entity *entity);
 
     RefEntity *getRefEntity(coordinates cds);

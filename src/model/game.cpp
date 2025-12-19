@@ -119,7 +119,7 @@ Action Game::stayAction() {
 void Game::applyAction(const Action &a) {
   if (!a) return;
 
-  for (local_entity to_remove : a.toRemove()) {
+  for (local_block to_remove : a.toRemove()) {
     // the cell where we have to remove the entity
     Grid::cell &cell = grid[to_remove.first];
 
@@ -127,7 +127,7 @@ void Game::applyAction(const Action &a) {
     cell.erase(std::find(cell.begin(), cell.end(), to_remove.second));
   }
 
-  for (local_entity to_add : a.toAdd()) {
+  for (local_block to_add : a.toAdd()) {
     grid[to_add.first].push_back(to_add.second);
   }
 }
@@ -137,7 +137,7 @@ void Game::move(Direction d) {
 
   actualiseRegle();
   Action move_action;
-  for (local_entity to_move : grid[Property::YOU]) {
+  for (local_block to_move : grid[Property::YOU]) {
     to_move.second.d = d;
     Action a = moveAction(to_move.second, to_move.first);
     if (a) move_action += a;

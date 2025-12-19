@@ -26,7 +26,7 @@ class Block {
     Entity *e;
 };
 
-using local_entity = std::pair<coordinates, Block>;
-using local_entities = std::vector<local_entity>;
+using local_block = std::pair<coordinates, Block>;
+using local_blocks = std::vector<local_block>;
 
 #endif // MODEL_UTIL_HPP

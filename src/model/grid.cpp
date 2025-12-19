@@ -66,8 +66,8 @@ const Grid::cell Grid::operator[](coordinates cds) const {
   return (*this)(cds.first, cds.second);
 }
 
-local_entities Grid::operator[](const Property &p) {
-  local_entities ret;
+local_blocks Grid::operator[](const Property &p) {
+  local_blocks ret;
   for (unsigned i = 0; i < height; i++) {
     for (unsigned j = 0; j < width; j++) {
       for (const Block &b : grid[i][j]) {
