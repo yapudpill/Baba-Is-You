@@ -14,13 +14,14 @@ class Property: public TextEntity {
   public:
     static Property &YOU, &STOP, &PUSH, &WIN;
 
+    // The 'moving' block is entering of the 'receiver' block which is located
+    // at 'cds'
     virtual Action onEnter(
-      Entity &moving,
-      Direction d,
-      Entity &receiver,
+      Block &moving,
+      Block &receiver,
       const coordinates &cds,
       Game &game) const = 0;
-    virtual Action onStay(Entity &e, Game &game) const = 0;
+    virtual Action onStay(Block &b, Game &game) const = 0;
 };
 
 #endif // PROPERTY_HPP

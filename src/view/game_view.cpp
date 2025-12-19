@@ -15,6 +15,7 @@
 #include "model/operator.hpp"
 #include "model/ref_entity.hpp"
 #include "model/property.hpp"
+#include "model/util.hpp"
 
 const std::vector<sf::Color> background_colors{
   sf::Color{0x54a54bff},
@@ -75,8 +76,8 @@ void GameView::draw() {
 
   for (unsigned i = 0; i < grid.getHeight(); i++) {
     for (unsigned j = 0; j < grid.getWidth(); j++) {
-      for (const Entity *e : grid(i, j)) {
-        std::map<const Entity*, sf::Sprite>::const_iterator it = sprites.find(e);
+      for (const Block b : grid(i, j)) {
+        std::map<const Entity*, sf::Sprite>::const_iterator it = sprites.find(b.entity());
         if (it == sprites.end()) throw std::logic_error("cannot find sprite");
         sf::Sprite s{it->second};
         s.setPosition(j * sprite_size, i * sprite_size);

@@ -2,6 +2,8 @@
 
 #include <stdexcept>
 
+#include "model/entity.hpp"
+
 coordinates next(coordinates cds, Direction d) {
   switch (d) {
     case Direction::Right: return {cds.first, cds.second + 1};
@@ -12,4 +14,8 @@ coordinates next(coordinates cds, Direction d) {
   }
 }
 
-// ca va etre utile pour afficher les enums clairement au lieu de int très peu signifiant
+Block::Block(Direction d, Entity *e): d{d}, e{e} {}
+
+bool Block::operator==(const Block &other) {
+  return d == other.d && e == other.e;
+}

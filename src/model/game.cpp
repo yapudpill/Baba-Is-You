@@ -71,25 +71,25 @@ Game::Game(const std::string &path) {
         if (it == getEntity.end())
           throw std::runtime_error("Unknown block ID: " + tmp);
 
-        grid(i, j).push_back(it->second);
+        grid(i, j).emplace_back(Direction::Right, it->second);
       }
     }
   }
 }
 
 /* Move entity 'e' currently in cell 'cds' in direction 'd' */
-Action Game::moveAction(Entity *moving, const coordinates &cds, Direction d) {
-  coordinates nxt = next(cds, d);
+Action Game::moveAction(Block &moving, const coordinates &cds) {
+  coordinates nxt = next(cds, moving.d);
   if (!grid.inBounds(nxt)) return {false};
 
   Action a{{{nxt, moving}}, {{cds, moving}}};
 
   // pour chaque entité 'e' sur la case d'arrivée
-  for (Entity *receiver : grid[nxt]) {
+  for (Block &receiver : grid[nxt]) {
     // pour chaque propriété de l'entité 'e'
-    for (const Property *p : receiver->getProp()) {
+    for (const Property *p : receiver.entity()->getProp()) {
       // indiquer à la propriété que l'entité 'to_move' entre sur la case
-      a += p->onEnter(*moving, d, *receiver, nxt, *this);
+      a += p->onEnter(moving, receiver, nxt, *this);
     }
   }
 
@@ -101,10 +101,10 @@ Action Game::stayAction() {
 
   for (unsigned i = 0; i < grid.getHeight(); i++) {
     for (unsigned j = 0; j < grid.getWidth(); j++) {
-      for (Entity *e1 : grid(i, j)) {
-        for (Entity *e2 : grid(i, j)) {
-          for (const Property *p : e2->getProp()) {
-            a += p->onStay(*e1, *this);
+      for (Block &b1 : grid(i, j)) {
+        for (Block &b2 : grid(i, j)) {
+          for (const Property *p : b2.entity()->getProp()) {
+            a += p->onStay(b1, *this);
           }
         }
       }
@@ -121,7 +121,7 @@ void Game::applyAction(const Action &a) {
 
   for (local_entity to_remove : a.toRemove()) {
     // the cell where we have to remove the entity
-    cell &cell = grid[to_remove.first];
+    Grid::cell &cell = grid[to_remove.first];
 
     // find the first occurrence of the entity and remove it
     cell.erase(std::find(cell.begin(), cell.end(), to_remove.second));
@@ -138,7 +138,8 @@ void Game::move(Direction d) {
   actualiseRegle();
   Action move_action;
   for (local_entity to_move : grid[Property::YOU]) {
-    Action a = moveAction(to_move.second, to_move.first, d);
+    to_move.second.d = d;
+    Action a = moveAction(to_move.second, to_move.first);
     if (a) move_action += a;
   }
   applyAction(move_action);
@@ -155,8 +156,8 @@ void Game::move(Direction d) {
 void Game::clearAll() {
   for (unsigned i = 0; i < grid.getHeight(); i++) {
     for (unsigned j = 0; j < grid.getWidth(); j++) {
-      for (Entity *e : grid(i, j)) {
-        e->clearProp();
+      for (Block &b : grid(i, j)) {
+        b.entity()->clearProp();
       }
     }
   }

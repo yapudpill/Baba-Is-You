@@ -58,11 +58,11 @@ Grid::cell &Grid::operator[](coordinates cds) {
   return (*this)(cds.first, cds.second);
 }
 
-Grid::const_cell Grid::operator()(unsigned i, unsigned j) const {
+const Grid::cell Grid::operator()(unsigned i, unsigned j) const {
   return {grid[i][j].begin(), grid[i][j].end()};
 }
 
-Grid::const_cell Grid::operator[](coordinates cds) const {
+const Grid::cell Grid::operator[](coordinates cds) const {
   return (*this)(cds.first, cds.second);
 }
 
@@ -70,9 +70,9 @@ local_entities Grid::operator[](const Property &p) {
   local_entities ret;
   for (unsigned i = 0; i < height; i++) {
     for (unsigned j = 0; j < width; j++) {
-      for (Entity *e : grid[i][j]) {
-        if (e->hasProp(p)) {
-          ret.emplace_back(coordinates{i, j}, e);
+      for (const Block &b : grid[i][j]) {
+        if (b.entity()->hasProp(p)) {
+          ret.emplace_back(coordinates{i, j}, b);
         }
       }
     }
@@ -84,8 +84,8 @@ std::vector<coordinates> Grid::operator[](const Entity *entity) {
   std::vector<coordinates> ret;
   for (unsigned i = 0; i < height; i++) {
     for (unsigned j = 0; j < width; j++) {
-      for (Entity *e : grid[i][j]) {
-        if (e == entity) ret.emplace_back(i, j);
+      for (const Block &b : grid[i][j]) {
+        if (b.entity() == entity) ret.emplace_back(i, j);
       }
     }
   }
@@ -93,16 +93,16 @@ std::vector<coordinates> Grid::operator[](const Entity *entity) {
 }
 
 RefEntity *Grid::getRefEntity(coordinates cds) {
-  for (Entity *e : (*this)[cds]) {
-    if (RefEntity *re = dynamic_cast<RefEntity*>(e))
+  for (Block &b : (*this)[cds]) {
+    if (RefEntity *re = dynamic_cast<RefEntity*>(b.entity()))
       return re;
   }
   return nullptr;
 }
 
 Property *Grid::getProperty(coordinates cds) {
-  for (Entity *e : (*this)[cds]) {
-    if (Property *p = dynamic_cast<Property*>(e))
+  for (Block &b : (*this)[cds]) {
+    if (Property *p = dynamic_cast<Property*>(b.entity()))
       return p;
   }
   return nullptr;

@@ -7,31 +7,30 @@
 
 // YOU
 class : public Property {
-  Action onEnter(Entity&, Direction, Entity&, const coordinates&, Game&)
-    const override { return {}; }
-  Action onStay(Entity&, Game&) const override { return {}; }
+  Action onEnter(Block&, Block&, const coordinates&, Game&) const override { return {}; }
+  Action onStay(Block&, Game&) const override { return {}; }
 } hidden_you;
 
 // PUSH
 class : public Property {
-  Action onEnter(Entity&, Direction d, Entity &receiver, const coordinates &cds, Game &game) const override {
-    return game.moveAction(&receiver, cds, d);
+  Action onEnter(Block &moving, Block &receiver, const coordinates &cds, Game &game) const override {
+    receiver.d = moving.d;
+    return game.moveAction(receiver, cds);
   }
-  Action onStay(Entity&, Game&) const override { return {}; }
+  Action onStay(Block&, Game&) const override { return {}; }
 } hidden_push;
 
 // STOP
 class : public Property {
-  Action onEnter(Entity&, Direction, Entity&, const coordinates&, Game&)
-    const override { return {false}; }
-  Action onStay(Entity&, Game&) const override { return {}; }
+  Action onEnter(Block&, Block&, const coordinates&, Game&) const override { return {false}; }
+  Action onStay(Block&, Game&) const override { return {}; }
 } hidden_stop;
 
 // WIN
 class : public Property {
-  Action onEnter(Entity&, Direction, Entity&, const coordinates&, Game&) const override { return {}; }
-  Action onStay(Entity &e, Game &game) const override {
-    if (e.hasProp(Property::YOU)) {
+  Action onEnter(Block&, Block&, const coordinates&, Game&) const override { return {}; }
+  Action onStay(Block &b, Game &game) const override {
+    if (b.entity()->hasProp(Property::YOU)) {
       game.win = true;
     }
     return {};

@@ -10,8 +10,7 @@
 
 class Grid final {
   public:
-    using cell = std::vector<Entity*>;
-    using const_cell = const std::vector<const Entity*>;
+    using cell = std::vector<Block>;
 
     Grid() = default;
     Grid(unsigned h, unsigned w);
@@ -27,8 +26,8 @@ class Grid final {
     cell &operator()(unsigned i, unsigned j);
     cell &operator[](coordinates cds);
 
-    const_cell operator()(unsigned i, unsigned j) const;
-    const_cell operator[](coordinates cds) const;
+    const cell operator()(unsigned i, unsigned j) const;
+    const cell operator[](coordinates cds) const;
 
     local_entities operator[](const Property &p);
     std::vector<coordinates> operator[](const Entity *entity);
