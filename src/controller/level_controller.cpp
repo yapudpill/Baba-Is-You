@@ -20,6 +20,7 @@ void LevelController::onResized(unsigned width, unsigned height) {
 }
 
 void LevelController::onKeyPressed(sf::Keyboard::Key code) {
+  view.advanceAnimations();
   switch (code) {
     case sf::Keyboard::Left:
     case sf::Keyboard::Right:

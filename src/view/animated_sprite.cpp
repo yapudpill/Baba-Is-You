@@ -7,7 +7,7 @@
 #include "model/util.hpp"
 
 AnimatedSprite::AnimatedSprite(const sf::Texture &sheet, sf::IntRect base, int gap, unsigned frames):
-  Animation{sheet, base}, gap{gap}, frames{frames} {}
+  Animation{sheet, base}, current_rect{base_rect}, gap{gap}, frames{frames} {}
 
 sf::Sprite AnimatedSprite::getSprite(Direction) {
   return {spritesheet, current_rect};

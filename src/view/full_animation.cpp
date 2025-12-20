@@ -16,6 +16,11 @@ sf::Sprite FullAnimation::getSprite(Direction d) {
   return DirectedSprite::getSprite(d);
 }
 
+void FullAnimation::operator++() {
+  DirectedSprite::operator++();
+  AnimatedSprite::operator++();
+}
+
 int FullAnimation::getOffset(Direction d) {
   return frames * DirectedSprite::getOffset(d);
 }

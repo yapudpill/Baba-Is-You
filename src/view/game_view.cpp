@@ -7,6 +7,7 @@
 #include <map>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "model/basic_entity.hpp"
@@ -16,12 +17,15 @@
 #include "model/ref_entity.hpp"
 #include "model/property.hpp"
 #include "model/util.hpp"
+#include "view/animation.hpp"
+#include "view/full_animation.hpp"
+#include "view/static_sprite.hpp"
 
 const std::vector<sf::Color> background_colors{
   sf::Color{0x54a54bff},
   sf::Color{0x1b5999ff}
 };
-const unsigned sprite_size{24};
+const sf::Vector2i sprite_size{24, 24};
 
 sf::Texture load_spritesheet(std::string path){
   sf::Image img;
@@ -41,34 +45,40 @@ const sf::Texture objects{load_spritesheet("resource/image/objects.png")};
 const sf::Texture texts{load_spritesheet("resource/image/texts.png")};
 const sf::Texture tiles{load_spritesheet("resource/image/tiles.png")};
 
-const std::map<const Entity*, sf::Sprite> sprites {
-  {&BasicEntity::BABA, {characters, {576, 1, sprite_size, sprite_size}}},
-  {&BasicEntity::FLAG, {objects, {351, 226, sprite_size, sprite_size}}},
-  {&BasicEntity::ROCK, {objects, {851, 601, sprite_size, sprite_size}}},
-  {&BasicEntity::TILE, {objects, {101, 826, sprite_size, sprite_size}}},
-  {&BasicEntity::WALL, {tiles, {476, 1501, sprite_size, sprite_size}}},
-  {&BasicEntity::GRASS, {tiles, {476, 676, sprite_size, sprite_size}}},
-
-  {&RefEntity::NBABA, {characters, {551, 1, sprite_size, sprite_size}}},
-  {&RefEntity::NFLAG, {objects, {326, 226, sprite_size, sprite_size}}},
-  {&RefEntity::NROCK, {objects, {826, 601, sprite_size, sprite_size}}},
-  {&RefEntity::NTILE, {objects, {76, 826, sprite_size, sprite_size}}},
-  {&RefEntity::NWALL, {tiles, {451, 1501, sprite_size, sprite_size}}},
-  {&RefEntity::NGRASS, {tiles, {451, 676, sprite_size, sprite_size}}},
-  {&RefEntity::NTEXT, {texts, {126, 1, sprite_size, sprite_size}}},
-
-  {&Property::YOU,  {texts, {351, 226, sprite_size, sprite_size}}},
-  {&Property::WIN,  {texts, {351, 1123, sprite_size, sprite_size}}},
-  {&Property::STOP, {texts, {276, 301, sprite_size, sprite_size}}},
-  {&Property::PUSH, {texts, {126, 301, sprite_size, sprite_size}}},
-
-  {&Operator::IS, {texts, {226, 76, sprite_size, sprite_size}}}
-};
-
 GameView::GameView(sf::RenderWindow &window, const Grid &grid):
-    window{window}, grid{grid}, view_width{1.f * sprite_size * grid.getWidth()},
-    view_height{1.f * sprite_size * grid.getHeight()} {
+    window{window}, grid{grid}, view_width(sprite_size.x * grid.getWidth()),
+    view_height(sprite_size.y * grid.getHeight()),
+    sprites {
+      {&BasicEntity::BABA,  static_cast<StaticSprite*>(new FullAnimation{characters, {{576, 1}, sprite_size}, 1, 4})},
+      {&BasicEntity::FLAG,  new StaticSprite{objects, {{351, 226}, sprite_size}}},
+      {&BasicEntity::ROCK,  new StaticSprite{objects, {{851, 601}, sprite_size}}},
+      {&BasicEntity::TILE,  new StaticSprite{objects, {{101, 826}, sprite_size}}},
+      {&BasicEntity::WALL,  new StaticSprite{tiles, {{476, 1501}, sprite_size}}},
+      {&BasicEntity::GRASS, new StaticSprite{tiles, {{476, 676}, sprite_size}}},
+
+      {&RefEntity::NBABA,  new StaticSprite{characters, {{551, 1}, sprite_size}}},
+      {&RefEntity::NFLAG,  new StaticSprite{objects, {{326, 226}, sprite_size}}},
+      {&RefEntity::NROCK,  new StaticSprite{objects, {{826, 601}, sprite_size}}},
+      {&RefEntity::NTILE,  new StaticSprite{objects, {{76, 826}, sprite_size}}},
+      {&RefEntity::NWALL,  new StaticSprite{tiles, {{451, 1501}, sprite_size}}},
+      {&RefEntity::NGRASS, new StaticSprite{tiles, {{451, 676}, sprite_size}}},
+      {&RefEntity::NTEXT,  new StaticSprite{texts, {{126, 1}, sprite_size}}},
+
+      {&Property::YOU,  new StaticSprite{texts, {{351, 226}, sprite_size}}},
+      {&Property::WIN,  new StaticSprite{texts, {{351, 1123}, sprite_size}}},
+      {&Property::STOP, new StaticSprite{texts, {{276, 301}, sprite_size}}},
+      {&Property::PUSH, new StaticSprite{texts, {{126, 301}, sprite_size}}},
+
+      {&Operator::IS, new StaticSprite{texts, {{226, 76}, sprite_size}}}
+      }
+{
   resize(window.getSize().x, window.getSize().y);
+}
+
+GameView::~GameView() {
+  for (std::pair<const Entity*, Animation*> elem : sprites) {
+    delete elem.second;
+  }
 }
 
 void GameView::draw() {
@@ -77,10 +87,10 @@ void GameView::draw() {
   for (unsigned i = 0; i < grid.getHeight(); i++) {
     for (unsigned j = 0; j < grid.getWidth(); j++) {
       for (const Block b : grid(i, j)) {
-        std::map<const Entity*, sf::Sprite>::const_iterator it = sprites.find(b.entity());
+        std::map<const Entity*, Animation*>::const_iterator it = sprites.find(b.entity());
         if (it == sprites.end()) throw std::logic_error("cannot find sprite");
-        sf::Sprite s{it->second};
-        s.setPosition(j * sprite_size, i * sprite_size);
+        sf::Sprite s{it->second->getSprite(b.d)};
+        s.setPosition(j * sprite_size.y, i * sprite_size.x);
         window.draw(s);
       }
     }
@@ -98,4 +108,10 @@ void GameView::resize(unsigned win_w, unsigned win_h) {
 
   win_view.setViewport({(1 - viewport_w) / 2, (1 - viewport_h) / 2, viewport_w, viewport_h});
   window.setView(win_view);
+}
+
+void GameView::advanceAnimations() {
+  for (std::pair<const Entity*, Animation*> elem : sprites) {
+    ++*elem.second;
+  }
 }

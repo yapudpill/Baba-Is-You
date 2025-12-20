@@ -13,6 +13,7 @@ class FullAnimation: public DirectedSprite, public AnimatedSprite {
   public:
     FullAnimation(const sf::Texture &sheet, sf::IntRect base, int gap, unsigned frames);
     sf::Sprite getSprite(Direction d) override;
+    void operator++() override;
 
   protected:
     int getOffset(Direction d) override;
