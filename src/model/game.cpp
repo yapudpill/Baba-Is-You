@@ -26,6 +26,7 @@ const std::map<std::string, Entity*> getEntity {
   {"ROCK", &BasicEntity::ROCK},
   {"GRASS", &BasicEntity::GRASS},
   {"TILE", &BasicEntity::TILE},
+  {"KEKE", &BasicEntity::KEKE},
 
   {"&BABA", &RefEntity::NBABA},
   {"&FLAG", &RefEntity::NFLAG},
@@ -34,11 +35,14 @@ const std::map<std::string, Entity*> getEntity {
   {"&TEXT", &RefEntity::NTEXT},
   {"&GRASS", &RefEntity::NGRASS},
   {"&TILE", &RefEntity::NTILE},
+  {"&KEKE", &RefEntity::NKEKE},
 
   {"YOU", &Property::YOU},
   {"WIN", &Property::WIN},
   {"STOP", &Property::STOP},
   {"PUSH", &Property::PUSH},
+  {"DEFEAT", &Property::DEFEAT},
+  {"MOVE", &Property::MOVE},
 
   {"IS", &Operator::IS}
 };
@@ -101,10 +105,10 @@ Action Game::stayAction() {
 
   for (unsigned i = 0; i < grid.getHeight(); i++) {
     for (unsigned j = 0; j < grid.getWidth(); j++) {
-      for (Block &b1 : grid(i, j)) {
-        for (Block &b2 : grid(i, j)) {
-          for (const Property *p : b2.entity()->getProp()) {
-            a += p->onStay(b1, *this);
+      for (Block &staying : grid(i, j)) {
+        for (Block &receiver : grid(i, j)) {
+          for (const Property *p : receiver.entity()->getProp()) {
+            a += p->onStay(staying, receiver, {i, j}, *this);
           }
         }
       }
@@ -119,6 +123,10 @@ Action Game::stayAction() {
 void Game::applyAction(const Action &a) {
   if (!a) return;
 
+  for (local_block to_add : a.toAdd()) {
+    grid[to_add.first].push_back(to_add.second);
+  }
+
   for (local_block to_remove : a.toRemove()) {
     // the cell where we have to remove the entity
     Grid::cell &cell = grid[to_remove.first];
@@ -126,25 +134,32 @@ void Game::applyAction(const Action &a) {
     // find the first occurrence of the entity and remove it
     cell.erase(std::find(cell.begin(), cell.end(), to_remove.second));
   }
-
-  for (local_block to_add : a.toAdd()) {
-    grid[to_add.first].push_back(to_add.second);
-  }
 }
 
 void Game::move(Direction d) {
   Action total;
 
+  // onEnter //
   actualiseRegle();
   Action move_action;
+
+  // Déplacement des YOU
   for (local_block to_move : grid[Property::YOU]) {
     to_move.second.d = d;
     Action a = moveAction(to_move.second, to_move.first);
     if (a) move_action += a;
   }
+
+  // Déplacement des MOVE
+  for (local_block to_move : grid[Property::MOVE]) {
+    Action a = moveAction(to_move.second, to_move.first);
+    if (a) move_action += a;
+  }
+
   applyAction(move_action);
   total += move_action;
 
+  // onStay //
   actualiseRegle();
   Action stay_action{stayAction()};
   applyAction(stay_action);

@@ -50,6 +50,7 @@ GameView::GameView(sf::RenderWindow &window, const Grid &grid):
     view_height(sprite_size.y * grid.getHeight()),
     sprites {
       {&BasicEntity::BABA,  static_cast<StaticSprite*>(new FullAnimation{characters, {{576, 1}, sprite_size}, 1, 4})},
+      {&BasicEntity::KEKE,  static_cast<StaticSprite*>(new FullAnimation{characters, {{576, 826}, sprite_size}, 1, 4})},
       {&BasicEntity::FLAG,  new StaticSprite{objects, {{351, 226}, sprite_size}}},
       {&BasicEntity::ROCK,  new StaticSprite{objects, {{851, 601}, sprite_size}}},
       {&BasicEntity::TILE,  new StaticSprite{objects, {{101, 826}, sprite_size}}},
@@ -57,6 +58,7 @@ GameView::GameView(sf::RenderWindow &window, const Grid &grid):
       {&BasicEntity::GRASS, new StaticSprite{tiles, {{476, 676}, sprite_size}}},
 
       {&RefEntity::NBABA,  new StaticSprite{characters, {{551, 1}, sprite_size}}},
+      {&RefEntity::NKEKE,  new StaticSprite{characters, {{551, 826}, sprite_size}}},
       {&RefEntity::NFLAG,  new StaticSprite{objects, {{326, 226}, sprite_size}}},
       {&RefEntity::NROCK,  new StaticSprite{objects, {{826, 601}, sprite_size}}},
       {&RefEntity::NTILE,  new StaticSprite{objects, {{76, 826}, sprite_size}}},
@@ -68,6 +70,8 @@ GameView::GameView(sf::RenderWindow &window, const Grid &grid):
       {&Property::WIN,  new StaticSprite{texts, {{351, 1123}, sprite_size}}},
       {&Property::STOP, new StaticSprite{texts, {{276, 301}, sprite_size}}},
       {&Property::PUSH, new StaticSprite{texts, {{126, 301}, sprite_size}}},
+      {&Property::DEFEAT, new StaticSprite{texts, {{51, 730}, sprite_size}}},
+      {&Property::MOVE, new StaticSprite{texts, {{351, 301}, sprite_size}}},
 
       {&Operator::IS, new StaticSprite{texts, {{226, 76}, sprite_size}}}
       }

@@ -12,7 +12,7 @@ Properties are referenced inside other other entities to define their behavior.
 */
 class Property: public TextEntity {
   public:
-    static Property &YOU, &STOP, &PUSH, &WIN;
+    static Property &YOU, &STOP, &PUSH, &WIN, &DEFEAT, &MOVE;
 
     // The 'moving' block is entering of the 'receiver' block which is located
     // at 'cds'
@@ -21,7 +21,11 @@ class Property: public TextEntity {
       Block &receiver,
       const coordinates &cds,
       Game &game) const = 0;
-    virtual Action onStay(Block &b, Game &game) const = 0;
+    virtual Action onStay(
+      Block &staying,
+      Block &receiver,
+      const coordinates &cds,
+      Game &game) const = 0;
 };
 
 #endif // PROPERTY_HPP

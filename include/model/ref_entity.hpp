@@ -8,7 +8,7 @@
 Operators and Propreties creates rules. */
 class RefEntity: public TextEntity {
   public:
-    static RefEntity NBABA, NWALL, NFLAG, NROCK, NTEXT, NGRASS, NTILE;
+    static RefEntity NBABA, NWALL, NFLAG, NROCK, NTEXT, NGRASS, NTILE, NKEKE;
     Entity &ref;
 
   private:

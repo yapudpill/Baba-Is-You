@@ -29,7 +29,7 @@ Action &Action::operator+=(const Action &other) {
   return *this;
 }
 
-Action Action::reverse() {
+Action Action::reverse() const {
   Action copy{*this};
   std::swap(copy.added, copy.removed);
   return copy;
