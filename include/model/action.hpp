@@ -16,6 +16,7 @@ class Action {
     local_blocks toAdd() const { return added; }
     local_blocks toRemove() const { return removed; }
     Action reverse() const;
+    bool empty() const;
 
   private:
     bool move = true;

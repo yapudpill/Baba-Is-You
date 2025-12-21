@@ -34,3 +34,7 @@ Action Action::reverse() const {
   std::swap(copy.added, copy.removed);
   return copy;
 }
+
+bool Action::empty() const {
+  return !move || (added.empty() && removed.empty());
+}

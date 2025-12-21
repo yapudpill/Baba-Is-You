@@ -153,7 +153,13 @@ void Game::move(Direction d) {
   // Déplacement des MOVE
   for (local_block to_move : grid[Property::MOVE]) {
     Action a = moveAction(to_move.second, to_move.first);
-    if (a) move_action += a;
+    if (a.empty()) {
+      Grid::cell &cell = grid[to_move.first];
+      Grid::cell::iterator it = std::find(cell.begin(), cell.end(), to_move.second);
+      it->d = oppositeDirection(it->d);
+    } else {
+      move_action += a;
+    }
   }
 
   applyAction(move_action);

@@ -7,6 +7,7 @@
 #include "model/entity.hpp"
 
 enum class Direction {Right, Left, Up, Down};
+Direction oppositeDirection(Direction d);
 
 using coordinates = std::pair<unsigned, unsigned>;
 coordinates next(coordinates cds, Direction d);

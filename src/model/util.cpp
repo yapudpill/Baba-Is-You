@@ -4,6 +4,16 @@
 
 #include "model/entity.hpp"
 
+Direction oppositeDirection(Direction d) {
+  switch (d) {
+    case Direction::Right: return Direction::Left;
+    case Direction::Left:  return Direction::Right;
+    case Direction::Up:    return Direction::Down;
+    case Direction::Down:  return Direction::Up;
+    default: throw std::logic_error("Unknown direction");
+  }
+}
+
 coordinates next(coordinates cds, Direction d) {
   switch (d) {
     case Direction::Right: return {cds.first, cds.second + 1};
