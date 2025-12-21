@@ -27,5 +27,5 @@ coordinates next(coordinates cds, Direction d) {
 Block::Block(Direction d, Entity *e): d{d}, e{e} {}
 
 bool Block::operator==(const Block &other) {
-  return d == other.d && e == other.e;
+  return e == other.e;
 }
