@@ -8,12 +8,15 @@
 #include "controller/sub_controller.hpp"
 #include "model/game.hpp"
 #include "view/game_view.hpp"
+#include "view/view.hpp"
 
 class LevelController: public SubController {
   public:
-    LevelController(MainController &mc, sf::RenderWindow &win, std::string path);
-    void onResized(unsigned width, unsigned height) override;
+    LevelController(MainController &mc, sf::RenderWindow &win, const std::string &path);
     void onKeyPressed(sf::Keyboard::Key code) override;
+
+  protected:
+    View &getView() override { return view; }
 
   private:
     Game game;

@@ -9,14 +9,9 @@
 #include "controller/util.hpp"
 #include "model/property.hpp"
 
-LevelController::LevelController(MainController &mc, sf::RenderWindow &win, std::string path):
-    SubController{mc, win}, game{path}, view{window, game.getGrid()} {
-  view.draw();
-}
-
-void LevelController::onResized(unsigned width, unsigned height) {
-  view.resize(width, height);
-  view.draw();
+LevelController::LevelController(MainController &mc, sf::RenderWindow &win, const std::string &path):
+    SubController{mc, win}, game{path}, view{game.getGrid()} {
+  onResized(window.getSize().x, window.getSize().y);
 }
 
 void LevelController::onKeyPressed(sf::Keyboard::Key code) {
@@ -27,17 +22,14 @@ void LevelController::onKeyPressed(sf::Keyboard::Key code) {
     case sf::Keyboard::Up:
     case sf::Keyboard::Down:
       game.move(getDirection(code));
-      view.draw();
       break;
 
     case sf::Keyboard::Z:
       game.undo();
-      view.draw();
       break;
 
     case sf::Keyboard::Y:
       game.redo();
-      view.draw();
       break;
 
     default:;

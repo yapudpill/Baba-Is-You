@@ -1,17 +1,20 @@
 #include "menu/menu_view.hpp"
-#include "model/util.hpp"
 
 #include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/RenderStates.hpp>
+#include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/Text.hpp>
+#include <SFML/Graphics/View.hpp>
 #include <SFML/System/Vector2.hpp>
-#include <algorithm>
 #include <stdexcept>
 #include <string>
-#include <vector>
+
+#include "menu/menu_model.hpp"
 
 sf::Texture loadTexture(std::string path) {
   sf::Texture t;
@@ -28,66 +31,49 @@ sf::Font loadFont(std::string path) {
 }
 
 const sf::Texture logo_texture = loadTexture("resource/image/logo.png");
-const unsigned logo_w{logo_texture.getSize().x}, logo_h{logo_texture.getSize().y};
+const sf::Vector2u logo_size{logo_texture.getSize()};
 const sf::Sprite logo{logo_texture};
-
 const sf::Font font = loadFont("resource/fonts/NotoSans-Regular.ttf");
-const unsigned char_size = 40;
-const int lines{5};
 
-// TODO: find how to define view_width and view_height properly
-MenuView::MenuView(sf::RenderWindow &win, const std::vector<std::string> &choices):
-    window{win}, view_width{1.f * logo_w},
-    view_height{1.5f * char_size * lines + logo_h}, choices{choices} {
-  resize(window.getSize().x, window.getSize().y);
+MenuView::MenuView(const MenuModel &m): radius{2}, char_size{60},
+    line_height{1.5f * char_size}, menu_height{(2 * radius + 1) * line_height},
+    model{m} {
+  width = logo_size.x;
+  height = logo_size.y + menu_height;
 }
 
-void MenuView::resize(unsigned win_w, unsigned win_h) {
-  sf::View win_view{{0, 0, view_width, view_height}};
+void MenuView::draw(sf::RenderTarget &target, sf::RenderStates states) const {
+  target.draw(logo);
 
-  float ratio = std::min(win_w / view_width, win_h / view_height);
-  float viewport_w = ratio * view_width / win_w;
-  float viewport_h = ratio * view_height / win_h;
+  sf::RenderTexture texture;
+  texture.create(width, menu_height);
+  texture.clear();
+  drawChoices(texture);
+  texture.display();
 
-  win_view.setViewport({(1 - viewport_w) / 2, (1 - viewport_h) / 2, viewport_w, viewport_h});
-  window.setView(win_view);
+  sf::Sprite choices{texture.getTexture()};
+  choices.move(0, logo_size.y);
+  target.draw(choices, states);
 }
 
-void MenuView::draw() {
-  window.clear();
-
-  window.draw(logo);
-
+void MenuView::drawChoices(sf::RenderTarget &target) const {
   sf::Text t{"", font, char_size};
 
-  for (int i = std::max(0, selected - lines / 2);
-      i < std::min(static_cast<int>(choices.size()), selected + lines /2);
-      i++) {
-    t.setString(choices[i]);
-    t.setPosition({0, logo_h + 1.5f * char_size * i});
-    if (i == selected) {
-      t.setFillColor(sf::Color::Red);
+  for (int i = -radius; i <= radius; i++, t.move(0, line_height)) {
+    const std::string &name = model.getAroundSelected(i);
+    if (i == 0) {
+      t.setString("- " + name + " -");
+      t.setFillColor(sf::Color::Yellow);
       t.setStyle(sf::Text::Bold);
     } else {
-      t.setFillColor(sf::Color::White);
+      t.setString(name);
+      t.setFillColor(sf::Color{0xBBBBBBFF}); // Light grey
       t.setStyle(sf::Text::Regular);
     }
-    window.draw(t);
-  }
 
-  window.display();
-}
-
-void MenuView::moveSelection(Direction d) {
-  switch (d) {
-    case Direction::Down:
-    case Direction::Left:
-      if (selected < static_cast<int>(choices.size()) - 1) selected++;
-      break;
-
-    case Direction::Up:
-    case Direction::Right:
-      if (selected > 0) selected--;
-      break;
+    // center the text
+    sf::Vector2f text_size = t.getGlobalBounds().getSize();
+    t.setPosition((target.getSize().x - text_size.x) / 2, t.getPosition().y);
+    target.draw(t);
   }
 }

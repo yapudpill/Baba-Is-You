@@ -24,7 +24,7 @@ MainController::~MainController() {
 void MainController::run() {
   sf::Event event;
   while (window.isOpen()) {
-    while (window.waitEvent(event)) {
+    while (window.pollEvent(event)) {
       switch (event.type) {
         case sf::Event::Closed:
           window.close();
@@ -47,6 +47,10 @@ void MainController::run() {
         default:;
       }
     }
+
+    window.clear();
+    subController->update();
+    window.display();
   }
 }
 
@@ -74,5 +78,6 @@ void MainController::setFullscreen(bool fs) {
     style = sf::Style::Default;
   }
   window.create(mode, title, style);
+  window.setFramerateLimit(30);
   fullscreen = fs;
 }

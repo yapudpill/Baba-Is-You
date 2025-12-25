@@ -1,5 +1,5 @@
 CXX := g++
-CXXFLAGS := --std=c++11 -Wall -Iinclude
+CXXFLAGS := --std=c++11 -Wall -Wextra -Wpedantic -Iinclude
 LDLIBS := -lsfml-graphics -lsfml-window -lsfml-system
 
 objects := $(patsubst src/%.cpp, build/%.o, $(shell find src -name "*.cpp" -type f))

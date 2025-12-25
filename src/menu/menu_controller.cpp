@@ -4,30 +4,32 @@
 
 #include "controller/main_controller.hpp"
 #include "controller/sub_controller.hpp"
-#include "controller/util.hpp"
 
 MenuController::MenuController(MainController &mc, sf::RenderWindow &win):
-    SubController{mc, win}, view{window, model.getNames()} {
-  view.draw();
-}
-
-void MenuController::onResized(unsigned width, unsigned height) {
-  view.resize(width, height),
-  view.draw();
+    SubController{mc, win}, view{model} {
+  onResized(window.getSize().x, window.getSize().y);
 }
 
 void MenuController::onKeyPressed(sf::Keyboard::Key code) {
   switch (code) {
     case sf::Keyboard::Right:
-    case sf::Keyboard::Up:
-    case sf::Keyboard::Left:
+      model.moveSelected(5);
+      break;
+
     case sf::Keyboard::Down:
-      view.moveSelection(getDirection(code));
-      view.draw();
+      model.moveSelected(1);
+      break;
+
+    case sf::Keyboard::Left:
+      model.moveSelected(-5);
+      break;
+
+    case sf::Keyboard::Up:
+      model.moveSelected(-1);
       break;
 
     case sf::Keyboard::Enter:
-      main_controller.loadLevel(model.getPath(view.getSelection()));
+      main_controller.loadLevel(model.getPath());
       break;
 
     default:;
