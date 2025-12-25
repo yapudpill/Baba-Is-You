@@ -152,15 +152,18 @@ void Game::move(Direction d) {
   applyAction(update1);
   total += update1;
 
-  Action move_action;
   // Déplacement des YOU
+  Action you_action;
   for (local_block to_move : grid[Property::YOU]) {
     to_move.second.d = d;
     Action a = moveAction(to_move.second, to_move.first);
-    if (a) move_action += a;
+    if (a) you_action += a;
   }
+  applyAction(you_action);
+  total += you_action;
 
   // Déplacement des MOVE
+  Action move_action;
   for (local_block to_move : grid[Property::MOVE]) {
     Action a = moveAction(to_move.second, to_move.first);
     if (a.empty()) {
@@ -171,7 +174,6 @@ void Game::move(Direction d) {
       move_action += a;
     }
   }
-
   applyAction(move_action);
   total += move_action;
 
