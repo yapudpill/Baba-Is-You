@@ -9,6 +9,8 @@ BasicEntity BasicEntity::WALL;
 BasicEntity BasicEntity::GRASS;
 BasicEntity BasicEntity::TILE;
 BasicEntity BasicEntity::KEKE;
+BasicEntity BasicEntity::KEY;
+BasicEntity BasicEntity::DOOR;
 
 bool BasicEntity::hasProp(const Property &p) const {
   return properties.find(&p) != properties.end();

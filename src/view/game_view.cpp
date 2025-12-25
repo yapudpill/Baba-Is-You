@@ -58,6 +58,9 @@ GameView::GameView(const Grid &grid):
     {&BasicEntity::TILE,  new StaticSprite{objects, {{101, 826}, sprite_size}}},
     {&BasicEntity::WALL,  new StaticSprite{tiles, {{476, 1501}, sprite_size}}},
     {&BasicEntity::GRASS, new StaticSprite{tiles, {{476, 676}, sprite_size}}},
+    {&BasicEntity::KEY, new StaticSprite{objects, {{476, 376}, sprite_size}}},
+    {&BasicEntity::DOOR, new StaticSprite{objects, {{476, 151}, sprite_size}}},
+
 
     {&RefEntity::NBABA,  new StaticSprite{characters, {{551, 1}, sprite_size}}},
     {&RefEntity::NKEKE,  new StaticSprite{characters, {{551, 826}, sprite_size}}},
@@ -67,6 +70,9 @@ GameView::GameView(const Grid &grid):
     {&RefEntity::NWALL,  new StaticSprite{tiles, {{451, 1501}, sprite_size}}},
     {&RefEntity::NGRASS, new StaticSprite{tiles, {{451, 676}, sprite_size}}},
     {&RefEntity::NTEXT,  new StaticSprite{texts, {{126, 1}, sprite_size}}},
+    {&RefEntity::NKEY,  new StaticSprite{objects, {{451, 376}, sprite_size}}},
+    {&RefEntity::NDOOR,  new StaticSprite{objects, {{451, 151}, sprite_size}}},
+
 
     {&Property::YOU,  new StaticSprite{texts, {{351, 226}, sprite_size}}},
     {&Property::WIN,  new StaticSprite{texts, {{351, 1123}, sprite_size}}},
@@ -74,6 +80,9 @@ GameView::GameView(const Grid &grid):
     {&Property::PUSH, new StaticSprite{texts, {{126, 301}, sprite_size}}},
     {&Property::DEFEAT, new StaticSprite{texts, {{51, 730}, sprite_size}}},
     {&Property::MOVE, new StaticSprite{texts, {{351, 301}, sprite_size}}},
+    {&Property::OPEN, new StaticSprite{texts, {{276, 730}, sprite_size}}},
+    {&Property::SHUT, new StaticSprite{texts, {{351, 730}, sprite_size}}},
+
 
     {&Operator::IS, new StaticSprite{texts, {{226, 76}, sprite_size}}}
     } {}

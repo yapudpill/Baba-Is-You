@@ -1,10 +1,10 @@
 9 11
 &BABA,IS,YOU,,,,,,&FLAG,IS,WIN
-,,,,,,,,,,
+,,,,,,,,&DOOR,IS,SHUT
 WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL,WALL
 ,,,,,,,,,,
-,BABA,,,,&ROCK,IS,PUSH,,FLAG,
-,ROCK,,&BABA,,,,,,,
+,BABA,,,,&KEY,IS,OPEN,,FLAG,
+,ROCK,,,,,,&BABA,,,
 ,,,,,,,,,,
-,,,,,,,,,,
-&WALL,IS,PUSH,,&TEXT,,,,&ROCK,,PUSH
+,,,,KEY,,DOOR,,,,
+&WALL,IS,PUSH,,&TEXT,,,,&KEY,IS,PUSH

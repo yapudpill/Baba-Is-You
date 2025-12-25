@@ -12,7 +12,7 @@ Properties are referenced inside other other entities to define their behavior.
 */
 class Property: public TextEntity {
   public:
-    static Property &YOU, &STOP, &PUSH, &WIN, &DEFEAT, &MOVE;
+    static Property &YOU, &STOP, &PUSH, &WIN, &DEFEAT, &MOVE, &OPEN, &SHUT;
 
     // The 'moving' block is entering of the 'receiver' block which is located
     // at 'cds'

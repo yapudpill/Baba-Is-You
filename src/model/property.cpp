@@ -5,11 +5,11 @@
 #include "model/util.hpp"
 #include "model/game.hpp"
 
-// YOU + MOVE
+// YOU + MOVE + OPEN
 class : public Property {
   Action onEnter(Block&, Block&, const coordinates&, Game&) const override { return {}; }
   Action onStay(Block&, Block&, const coordinates&, Game&) const override { return {}; }
-} hidden_you, hidden_move;
+} hidden_you, hidden_move, hidden_open;
 
 // PUSH
 class : public Property {
@@ -50,9 +50,22 @@ class : public Property {
   }
 } hidden_defeat;
 
+// SHUT
+class : public Property {
+  Action onEnter(Block &moving, Block &receiver, const coordinates &cds, Game&) const override {
+    if (moving.entity()->hasProp(Property::OPEN)) {
+      return {{}, {{next(cds, oppositeDirection(moving.d)), moving}, {cds,receiver}}, false};
+    }
+    return {false};
+  }
+  Action onStay(Block&, Block&, const coordinates&, Game&) const override { return {}; }
+} hidden_shut;
+
 Property &Property::YOU{hidden_you};
+Property &Property::MOVE{hidden_move};
+Property &Property::OPEN{hidden_open};
 Property &Property::PUSH{hidden_push};
 Property &Property::STOP{hidden_stop};
 Property &Property::WIN{hidden_win};
 Property &Property::DEFEAT{hidden_defeat};
-Property &Property::MOVE{hidden_move};
+Property &Property::SHUT{hidden_shut};

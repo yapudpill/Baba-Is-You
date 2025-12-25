@@ -27,6 +27,8 @@ const std::map<std::string, Entity*> getEntity {
   {"GRASS", &BasicEntity::GRASS},
   {"TILE", &BasicEntity::TILE},
   {"KEKE", &BasicEntity::KEKE},
+  {"KEY", &BasicEntity::KEY},
+  {"DOOR", &BasicEntity::DOOR},
 
   {"&BABA", &RefEntity::NBABA},
   {"&FLAG", &RefEntity::NFLAG},
@@ -36,6 +38,8 @@ const std::map<std::string, Entity*> getEntity {
   {"&GRASS", &RefEntity::NGRASS},
   {"&TILE", &RefEntity::NTILE},
   {"&KEKE", &RefEntity::NKEKE},
+  {"&KEY", &RefEntity::NKEY},
+  {"&DOOR", &RefEntity::NDOOR},
 
   {"YOU", &Property::YOU},
   {"WIN", &Property::WIN},
@@ -43,6 +47,8 @@ const std::map<std::string, Entity*> getEntity {
   {"PUSH", &Property::PUSH},
   {"DEFEAT", &Property::DEFEAT},
   {"MOVE", &Property::MOVE},
+  {"OPEN", &Property::OPEN},
+  {"SHUT", &Property::SHUT},
 
   {"IS", &Operator::IS}
 };
@@ -86,7 +92,7 @@ Action Game::moveAction(Block &moving, const coordinates &cds) {
   coordinates nxt = next(cds, moving.d);
   if (!grid.inBounds(nxt)) return {false};
 
-  Action a{{{nxt, moving}}, {{cds, moving}}};
+  Action a;
 
   // pour chaque entité 'e' sur la case d'arrivée
   for (Block &receiver : grid[nxt]) {
@@ -96,6 +102,8 @@ Action Game::moveAction(Block &moving, const coordinates &cds) {
       a += p->onEnter(moving, receiver, nxt, *this);
     }
   }
+
+  if (a.doMove()) a += {{{nxt, moving}}, {{cds, moving}}};
 
   return a;
 }
