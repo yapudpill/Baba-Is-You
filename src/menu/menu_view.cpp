@@ -35,7 +35,6 @@ const sf::Vector2u logo_size{logo_texture.getSize()};
 const sf::Sprite logo{logo_texture};
 const sf::Font font = loadFont("resource/fonts/NotoSans-Regular.ttf");
 
-// TODO: find how to define view_width and view_height properly
 MenuView::MenuView(const MenuModel &m): radius{2}, char_size{60},
     line_height{1.5f * char_size}, menu_height{(2 * radius + 1) * line_height},
     model{m} {
@@ -48,6 +47,7 @@ void MenuView::draw(sf::RenderTarget &target, sf::RenderStates states) const {
 
   sf::RenderTexture texture;
   texture.create(width, menu_height);
+  texture.clear();
   drawChoices(texture);
   texture.display();
 
