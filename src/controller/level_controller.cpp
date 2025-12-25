@@ -10,7 +10,7 @@
 #include "model/property.hpp"
 
 LevelController::LevelController(MainController &mc, sf::RenderWindow &win, const std::string &path):
-    SubController{mc, win}, game{path}, view{game.getGrid()} {
+    SubController{mc, win}, path{path}, game{path}, view{game.getGrid()} {
   onResized(window.getSize().x, window.getSize().y);
 }
 
@@ -30,6 +30,14 @@ void LevelController::onKeyPressed(sf::Keyboard::Key code) {
 
     case sf::Keyboard::Y:
       game.redo();
+      break;
+
+    case sf::Keyboard::R:
+      game = Game(path);
+      break;
+
+    case sf::Keyboard::Q:
+      main_controller.loadMenu();
       break;
 
     default:;

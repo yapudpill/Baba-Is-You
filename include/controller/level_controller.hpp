@@ -19,6 +19,7 @@ class LevelController: public SubController {
     View &getView() override { return view; }
 
   private:
+    std::string path;
     Game game;
     GameView view;
 };

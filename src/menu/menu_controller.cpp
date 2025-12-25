@@ -32,6 +32,10 @@ void MenuController::onKeyPressed(sf::Keyboard::Key code) {
       main_controller.loadLevel(model.getPath());
       break;
 
+    case sf::Keyboard::Q:
+      window.close();
+      break;
+
     default:;
   }
 }
