@@ -24,7 +24,7 @@ class Game final {
     void undo();
     void redo();
 
-    void actualiseRegle();
+    Action actualiseRegle();
     void clearAll();
 
     mutable bool win = false;

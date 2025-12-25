@@ -140,9 +140,11 @@ void Game::move(Direction d) {
   Action total;
 
   // onEnter //
-  actualiseRegle();
-  Action move_action;
+  Action update1 = actualiseRegle();
+  applyAction(update1);
+  total += update1;
 
+  Action move_action;
   // Déplacement des YOU
   for (local_block to_move : grid[Property::YOU]) {
     to_move.second.d = d;
@@ -166,7 +168,10 @@ void Game::move(Direction d) {
   total += move_action;
 
   // onStay //
-  actualiseRegle();
+  Action update2 = actualiseRegle();
+  applyAction(update2);
+  total += update2;
+
   Action stay_action{stayAction()};
   applyAction(stay_action);
   total += stay_action;
@@ -184,8 +189,9 @@ void Game::clearAll() {
   }
 }
 
-void Game::actualiseRegle() {
+Action Game::actualiseRegle() {
   clearAll();
+  Action act;
   for (coordinates cds : grid[&Operator::IS]) {
 
     coordinates left = next(cds, Direction::Left);
@@ -196,15 +202,40 @@ void Game::actualiseRegle() {
     if(grid.inBounds(left) && grid.inBounds(right)) { // horizontal
       RefEntity *a = grid.getRefEntity(left);
       Property *b = grid.getProperty(right);
+      RefEntity *c = grid.getRefEntity(right);
       if(a && b) a->ref.addProp(*b);
+      if (a && c) {
+        for (unsigned i = 0; i < grid.getHeight(); i++) {
+          for (unsigned j = 0; j < grid.getWidth(); j++) {
+            for (Block &b : grid(i, j)) {
+              if (b.entity() == &a->ref) {
+                act += {{{{i, j}, {b.d, &c->ref}}}, {{{{i, j}, {b.d, &a->ref}}}}};
+              }
+            }
+          }
+        }
+      }
     }
 
     if(grid.inBounds(up) && grid.inBounds(down)) { // vertical
-      RefEntity * a = grid.getRefEntity(up);
-      Property * b = grid.getProperty(down);
+      RefEntity *a = grid.getRefEntity(up);
+      Property *b = grid.getProperty(down);
+      RefEntity *c = grid.getRefEntity(down);
       if(a && b) a->ref.addProp(*b);
+      if (a && c) {
+        for (unsigned i = 0; i < grid.getHeight(); i++) {
+          for (unsigned j = 0; j < grid.getWidth(); j++) {
+            for (Block &b : grid(i, j)) {
+              if (b.entity() == &a->ref) {
+                act += {{{{i, j}, {b.d, &c->ref}}}, {{{{i, j}, {b.d, &a->ref}}}}};
+              }
+            }
+          }
+        }
+      }
     }
   }
+  return act;
 }
 
 void Game::undo() {
