@@ -17,6 +17,7 @@
 #include "model/operator.hpp"
 #include "model/property.hpp"
 #include "model/ref_entity.hpp"
+#include "model/rule_manager.hpp"
 #include "model/util.hpp"
 
 const std::map<std::string, Entity*> getEntity {
@@ -53,7 +54,7 @@ const std::map<std::string, Entity*> getEntity {
   {"IS", &Operator::IS}
 };
 
-Game::Game(const std::string &path) {
+Game::Game(const std::string &path): rules{grid, win} {
   std::ifstream file{path};
   if (!file) throw std::runtime_error("Failed to open file: " + path);
 
@@ -87,49 +88,22 @@ Game::Game(const std::string &path) {
   }
 }
 
-/* Move entity 'e' currently in cell 'cds' in direction 'd' */
-Action Game::moveAction(Block &moving, const coordinates &cds) {
-  coordinates nxt = next(cds, moving.d);
-  if (!grid.inBounds(nxt)) return {false};
-
-  Action a;
-
-  // pour chaque entité 'e' sur la case d'arrivée
-  for (Block &receiver : grid[nxt]) {
-    // pour chaque propriété de l'entité 'e'
-    for (const Property *p : receiver.entity()->getProp()) {
-      // indiquer à la propriété que l'entité 'to_move' entre sur la case
-      a += p->onEnter(moving, receiver, nxt, *this);
-    }
-  }
-
-  if (a.doMove()) a += {{{nxt, moving}}, {{cds, moving}}};
-
-  return a;
+Game &Game::operator=(const Game &other) {
+  win = other.win;
+  history = other.history;
+  grid = other.grid;
+  return *this;
 }
 
-Action Game::stayAction() {
-  Action a;
+Game &Game::operator=(Game &&other) {
+  win = std::move(other.win);
+  history = std::move(other.history);
+  grid = std::move(other.grid);
+  return *this;
+}
 
-  for (unsigned i = 0; i < grid.getHeight(); i++) {
-    for (unsigned j = 0; j < grid.getWidth(); j++) {
-      for (Block &staying : grid(i, j)) {
-        for (Block &receiver : grid(i, j)) {
-          for (const Property *p : receiver.entity()->getProp()) {
-            a += p->onStay(staying, receiver, {i, j}, *this);
-          }
-        }
-      }
-    }
-  }
-
-  if (!a) throw std::logic_error("onStay returned false");
-
-  return a;
-};
-
-void Game::applyAction(const Action &a) {
-  if (!a) return;
+const Action &Game::applyAction(const Action &a) {
+  if (!a) return a;
 
   for (local_block to_add : a.toAdd()) {
     grid[to_add.first].push_back(to_add.second);
@@ -142,31 +116,31 @@ void Game::applyAction(const Action &a) {
     // find the first occurrence of the entity and remove it
     cell.erase(std::find(cell.begin(), cell.end(), to_remove.second));
   }
+
+  return a;
 }
 
 void Game::move(Direction d) {
   Action total;
 
-  // onEnter //
-  Action update1 = actualiseRegle();
-  applyAction(update1);
-  total += update1;
+  //--- onEnter ---//
+  total += applyAction(rules.update());
 
-  // Déplacement des YOU
+  // Moving YOU
   Action you_action;
-  for (local_block to_move : grid[Property::YOU]) {
+  for (local_block &to_move : grid[Property::YOU]) {
     to_move.second.d = d;
-    Action a = moveAction(to_move.second, to_move.first);
+    Action a = rules.moveAction(to_move.second, to_move.first);
     if (a) you_action += a;
   }
-  applyAction(you_action);
-  total += you_action;
+  total += applyAction(you_action);
 
-  // Déplacement des MOVE
+  // Moving MOVE
   Action move_action;
-  for (local_block to_move : grid[Property::MOVE]) {
-    Action a = moveAction(to_move.second, to_move.first);
+  for (local_block &to_move : grid[Property::MOVE]) {
+    Action a = rules.moveAction(to_move.second, to_move.first);
     if (a.empty()) {
+      // If we cannot move, bounce and go in the opposite direction
       Grid::cell &cell = grid[to_move.first];
       Grid::cell::iterator it = std::find(cell.begin(), cell.end(), to_move.second);
       it->d = oppositeDirection(it->d);
@@ -174,78 +148,13 @@ void Game::move(Direction d) {
       move_action += a;
     }
   }
-  applyAction(move_action);
-  total += move_action;
+  total += applyAction(move_action);
 
-  // onStay //
-  Action update2 = actualiseRegle();
-  applyAction(update2);
-  total += update2;
-
-  Action stay_action{stayAction()};
-  applyAction(stay_action);
-  total += stay_action;
+  //--- onStay ---//
+  total += applyAction(rules.update());
+  total += applyAction(rules.stayAction());
 
   history.registerAction(total);
-}
-
-void Game::clearAll() {
-  for (unsigned i = 0; i < grid.getHeight(); i++) {
-    for (unsigned j = 0; j < grid.getWidth(); j++) {
-      for (Block &b : grid(i, j)) {
-        b.entity()->clearProp();
-      }
-    }
-  }
-}
-
-Action Game::actualiseRegle() {
-  clearAll();
-  Action act;
-  for (coordinates cds : grid[&Operator::IS]) {
-
-    coordinates left = next(cds, Direction::Left);
-    coordinates right = next(cds, Direction::Right);
-    coordinates up = next(cds, Direction::Up);
-    coordinates down = next(cds, Direction::Down);
-
-    if(grid.inBounds(left) && grid.inBounds(right)) { // horizontal
-      RefEntity *a = grid.getRefEntity(left);
-      Property *b = grid.getProperty(right);
-      RefEntity *c = grid.getRefEntity(right);
-      if(a && b) a->ref.addProp(*b);
-      if (a && c) {
-        for (unsigned i = 0; i < grid.getHeight(); i++) {
-          for (unsigned j = 0; j < grid.getWidth(); j++) {
-            for (Block &b : grid(i, j)) {
-              if (b.entity() == &a->ref) {
-                act += {{{{i, j}, {b.d, &c->ref}}}, {{{{i, j}, {b.d, &a->ref}}}}};
-              }
-            }
-          }
-        }
-      }
-    }
-
-    if(grid.inBounds(up) && grid.inBounds(down)) { // vertical
-      RefEntity *a = grid.getRefEntity(up);
-      Property *b = grid.getProperty(down);
-      RefEntity *c = grid.getRefEntity(down);
-      if(a && b) a->ref.addProp(*b);
-      if (a && c) {
-        for (unsigned i = 0; i < grid.getHeight(); i++) {
-          for (unsigned j = 0; j < grid.getWidth(); j++) {
-            for (Block &b : grid(i, j)) {
-              if (b.entity() == &a->ref) {
-                act += {{{{i, j}, {b.d, &c->ref}}}, {{{{i, j}, {b.d, &a->ref}}}}};
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-  return act;
 }
 
 void Game::undo() {

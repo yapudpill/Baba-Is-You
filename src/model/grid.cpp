@@ -1,10 +1,10 @@
 #include "model/grid.hpp"
 #include "model/entity.hpp"
 #include "model/property.hpp"
-#include "model/ref_entity.hpp"
 #include "model/util.hpp"
 
 #include <utility>
+#include <vector>
 
 Grid::Grid(unsigned h, unsigned w): height{h}, width{w}, grid{new cell*[h]} {
   for (unsigned i = 0; i < height; i++) {
@@ -20,7 +20,7 @@ Grid::Grid(const Grid &other): Grid{other.height, other.width} {
   }
 }
 
-Grid::Grid(Grid &&other) {
+Grid::Grid(Grid &&other) noexcept {
   swap(other);
 }
 
@@ -37,7 +37,7 @@ Grid &Grid::operator=(const Grid &other) {
   return *this;
 }
 
-Grid &Grid::operator=(Grid &&other) {
+Grid &Grid::operator=(Grid &&other) noexcept {
   swap(other);
   return *this;
 }
@@ -62,7 +62,7 @@ const Grid::cell Grid::operator()(unsigned i, unsigned j) const {
   return {grid[i][j].begin(), grid[i][j].end()};
 }
 
-const Grid::cell Grid::operator[](coordinates cds) const {
+const Grid::cell Grid::operator[](const coordinates &cds) const {
   return (*this)(cds.first, cds.second);
 }
 
@@ -92,29 +92,13 @@ std::vector<coordinates> Grid::operator[](const Entity *entity) {
   return ret;
 }
 
-RefEntity *Grid::getRefEntity(coordinates cds) {
-  for (Block &b : (*this)[cds]) {
-    if (RefEntity *re = dynamic_cast<RefEntity*>(b.entity()))
-      return re;
-  }
-  return nullptr;
-}
-
-Property *Grid::getProperty(coordinates cds) {
-  for (Block &b : (*this)[cds]) {
-    if (Property *p = dynamic_cast<Property*>(b.entity()))
-      return p;
-  }
-  return nullptr;
-}
-
-void Grid::swap(Grid &other) {
+void Grid::swap(Grid &other) noexcept {
   using std::swap;
   swap(*this, other);
 
 }
 
-void swap(Grid &grid1, Grid &grid2) {
+void swap(Grid &grid1, Grid &grid2) noexcept {
   using std::swap;
   swap(grid1.height, grid2.height);
   swap(grid1.width, grid2.width);

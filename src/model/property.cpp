@@ -3,46 +3,42 @@
 #include "model/action.hpp"
 #include "model/entity.hpp"
 #include "model/util.hpp"
-#include "model/game.hpp"
+#include "model/rule_manager.hpp"
 
 // YOU + MOVE + OPEN
-class : public Property {
-  Action onEnter(Block&, Block&, const coordinates&, Game&) const override { return {}; }
-  Action onStay(Block&, Block&, const coordinates&, Game&) const override { return {}; }
+class EmptyProp : public Property {
+  Action onEnter(Block&, Block&, const coordinates&, RuleManager&) const override { return {}; }
+  Action onStay(Block&, Block&, const coordinates&, RuleManager&) const override { return {}; }
 } hidden_you, hidden_move, hidden_open;
 
 // PUSH
-class : public Property {
-  Action onEnter(Block &moving, Block &receiver, const coordinates &cds, Game &game) const override {
+class : public EmptyProp {
+  Action onEnter(Block &moving, Block &receiver, const coordinates &cds, RuleManager &rules) const override {
     receiver.d = moving.d;
-    return game.moveAction(receiver, cds);
+    return rules.moveAction(receiver, cds);
   }
-  Action onStay(Block&, Block&, const coordinates&, Game&) const override { return {}; }
 } hidden_push;
 
 // STOP
-class : public Property {
-  Action onEnter(Block &, Block&, const coordinates&, Game&) const override {
-    return {false};
+class : public EmptyProp {
+  Action onEnter(Block &, Block&, const coordinates&, RuleManager&) const override {
+    return false;
   }
-  Action onStay(Block&, Block&, const coordinates&, Game&) const override { return {}; }
 } hidden_stop;
 
 // WIN
-class : public Property {
-  Action onEnter(Block&, Block&, const coordinates&, Game&) const override { return {}; }
-  Action onStay(Block &staying, Block&, const coordinates&, Game &game) const override {
+class : public EmptyProp {
+  Action onStay(Block &staying, Block&, const coordinates&, RuleManager &rules) const override {
     if (staying.entity()->hasProp(Property::YOU)) {
-      game.win = true;
+      rules.setWin();
     }
     return {};
   }
 } hidden_win;
 
 // DEFEAT
-class : public Property {
-  Action onEnter(Block&, Block&, const coordinates&, Game&) const override { return {}; }
-  Action onStay(Block &staying, Block&, const coordinates &cds, Game&) const override {
+class : public EmptyProp {
+  Action onStay(Block &staying, Block&, const coordinates &cds, RuleManager&) const override {
     if (staying.entity()->hasProp(Property::YOU)) {
       return {{}, {{cds, staying}}};
     }
@@ -51,14 +47,13 @@ class : public Property {
 } hidden_defeat;
 
 // SHUT
-class : public Property {
-  Action onEnter(Block &moving, Block &receiver, const coordinates &cds, Game&) const override {
+class : public EmptyProp {
+  Action onEnter(Block &moving, Block &receiver, const coordinates &cds, RuleManager&) const override {
     if (moving.entity()->hasProp(Property::OPEN)) {
       return {{}, {{next(cds, oppositeDirection(moving.d)), moving}, {cds,receiver}}, false};
     }
-    return {false};
+    return false;
   }
-  Action onStay(Block&, Block&, const coordinates&, Game&) const override { return {}; }
 } hidden_shut;
 
 Property &Property::YOU{hidden_you};

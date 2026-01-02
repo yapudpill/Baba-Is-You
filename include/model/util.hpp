@@ -19,8 +19,6 @@ class Block {
     Direction d;
     Entity *entity() { return e; };
     const Entity *entity() const { return e; }
-    void setEntity(Entity *e) { this->e = e; }
-
     bool operator==(const Block &other);
 
   private:

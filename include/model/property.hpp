@@ -5,7 +5,7 @@
 #include "model/text_entity.hpp"
 #include "model/util.hpp"
 
-class Game;
+class RuleManager;
 
 /* A Property is a TextEntity that defines interaction rules via two functions.
 Properties are referenced inside other other entities to define their behavior.
@@ -20,12 +20,12 @@ class Property: public TextEntity {
       Block &moving,
       Block &receiver,
       const coordinates &cds,
-      Game &game) const = 0;
+      RuleManager &rules) const = 0;
     virtual Action onStay(
       Block &staying,
       Block &receiver,
       const coordinates &cds,
-      Game &game) const = 0;
+      RuleManager &rules) const = 0;
 };
 
 #endif // PROPERTY_HPP
