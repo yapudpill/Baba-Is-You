@@ -7,7 +7,6 @@
 #include "controller/main_controller.hpp"
 #include "controller/sub_controller.hpp"
 #include "controller/util.hpp"
-#include "model/property.hpp"
 
 LevelController::LevelController(MainController &mc, sf::RenderWindow &win, const std::string &path):
     SubController{mc, win}, path{path}, game{path}, view{game.getGrid()} {
