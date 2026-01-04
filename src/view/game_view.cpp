@@ -10,7 +10,6 @@
 #include <stdexcept>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "model/basic_entity.hpp"
 #include "model/entity.hpp"
@@ -19,33 +18,11 @@
 #include "model/ref_entity.hpp"
 #include "model/property.hpp"
 #include "model/util.hpp"
-#include "view/animation.hpp"
-#include "view/full_animation.hpp"
-#include "view/static_sprite.hpp"
 
-const std::vector<sf::Color> background_colors{
-  sf::Color{0x54a54bff},
-  sf::Color{0x1b5999ff}
-};
-const std::string prefix = "resource/image/";
-
-sf::Texture load_spritesheet(std::string name) {
-  sf::Image img;
-  if (!img.loadFromFile(prefix + name))
-    throw std::runtime_error("Cannot load sprite sheet " + name);
-
-  for (sf::Color col : background_colors) {
-    img.createMaskFromColor(col);
-  }
-  sf::Texture t;
-  t.loadFromImage(img);
-  return t;
-}
-
-const sf::Texture characters = load_spritesheet("characters.png");
-const sf::Texture objects = load_spritesheet("objects.png");
-const sf::Texture texts = load_spritesheet("texts.png");
-const sf::Texture tiles = load_spritesheet("tiles.png");
+const sf::Texture &characters = SpritesheetFactory::get("characters.png");
+const sf::Texture &objects = SpritesheetFactory::get("objects.png");
+const sf::Texture &texts = SpritesheetFactory::get("texts.png");
+const sf::Texture &tiles = SpritesheetFactory::get("tiles.png");
 const sf::Vector2i sprite_size{24, 24};
 
 GameView::GameView(const Grid &grid):
