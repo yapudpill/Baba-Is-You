@@ -3,7 +3,7 @@
 
 #include <map>
 
-#include "model/entity.hpp"
+#include "model/entity/entity.hpp"
 #include "view/animation/animation.hpp"
 
 class AnimationFactory {

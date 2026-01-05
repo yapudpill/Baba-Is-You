@@ -1,7 +1,7 @@
-#include "model/ref_entity.hpp"
+#include "model/entity/ref_entity.hpp"
 
-#include "model/basic_entity.hpp"
-#include "model/entity.hpp"
+#include "model/entity/basic_entity.hpp"
+#include "model/entity/entity.hpp"
 
 RefEntity::RefEntity(Entity &r): ref{r} {}
 

@@ -4,7 +4,7 @@
 #include <utility>
 #include <vector>
 
-#include "model/entity.hpp"
+#include "model/entity/entity.hpp"
 
 enum class Direction {Right, Left, Up, Down};
 Direction oppositeDirection(Direction d);

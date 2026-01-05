@@ -1,6 +1,6 @@
-#include "model/basic_entity.hpp"
+#include "model/entity/basic_entity.hpp"
 
-#include "model/property.hpp"
+#include "model/entity/property.hpp"
 
 BasicEntity BasicEntity::BABA;
 BasicEntity BasicEntity::ROCK;

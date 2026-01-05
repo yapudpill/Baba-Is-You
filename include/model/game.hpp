@@ -4,11 +4,11 @@
 #include <string>
 
 #include "model/action.hpp"
+#include "model/entity/property.hpp"
 #include "model/grid.hpp"
 #include "model/history.hpp"
 #include "model/rule_manager.hpp"
 #include "model/util.hpp"
-#include "model/property.hpp"
 
 /** Master class of the model */
 class Game final {

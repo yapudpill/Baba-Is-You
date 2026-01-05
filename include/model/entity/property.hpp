@@ -2,7 +2,7 @@
 #define PROPERTY_HPP
 
 #include "model/action.hpp"
-#include "model/text_entity.hpp"
+#include "model/entity/text_entity.hpp"
 #include "model/util.hpp"
 
 class RuleManager;

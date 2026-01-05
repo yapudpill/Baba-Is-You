@@ -5,11 +5,11 @@
 #include <string>
 #include <utility>
 
-#include "model/basic_entity.hpp"
-#include "model/entity.hpp"
-#include "model/operator.hpp"
-#include "model/property.hpp"
-#include "model/ref_entity.hpp"
+#include "model/entity/basic_entity.hpp"
+#include "model/entity/entity.hpp"
+#include "model/entity/operator.hpp"
+#include "model/entity/property.hpp"
+#include "model/entity/ref_entity.hpp"
 #include "view/animation/animation.hpp"
 #include "view/animation/full_animation.hpp"
 #include "view/animation/static_sprite.hpp"

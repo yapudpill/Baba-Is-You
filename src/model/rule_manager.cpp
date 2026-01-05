@@ -3,10 +3,10 @@
 #include <vector>
 
 #include "model/action.hpp"
+#include "model/entity/operator.hpp"
+#include "model/entity/property.hpp"
+#include "model/entity/ref_entity.hpp"
 #include "model/grid.hpp"
-#include "model/operator.hpp"
-#include "model/property.hpp"
-#include "model/ref_entity.hpp"
 #include "model/util.hpp"
 
 RuleManager::RuleManager(Grid &grid, bool &win): grid{grid}, winFlag{win} {}

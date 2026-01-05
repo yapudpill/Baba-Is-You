@@ -1,6 +1,6 @@
-#include "model/text_entity.hpp"
+#include "model/entity/text_entity.hpp"
 
-#include "model/property.hpp"
+#include "model/entity/property.hpp"
 
 #include <set>
 

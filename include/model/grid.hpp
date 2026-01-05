@@ -3,8 +3,8 @@
 
 #include <vector>
 
-#include "model/entity.hpp"
-#include "model/property.hpp"
+#include "model/entity/entity.hpp"
+#include "model/entity/property.hpp"
 #include "model/util.hpp"
 
 class Grid final {

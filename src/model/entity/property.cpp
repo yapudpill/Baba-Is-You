@@ -1,7 +1,7 @@
-#include "model/property.hpp"
+#include "model/entity/property.hpp"
 
 #include "model/action.hpp"
-#include "model/entity.hpp"
+#include "model/entity/entity.hpp"
 #include "model/util.hpp"
 #include "model/rule_manager.hpp"
 

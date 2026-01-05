@@ -1,10 +1,11 @@
 #include "model/grid.hpp"
-#include "model/entity.hpp"
-#include "model/property.hpp"
-#include "model/util.hpp"
 
 #include <utility>
 #include <vector>
+
+#include "model/entity/entity.hpp"
+#include "model/entity/property.hpp"
+#include "model/util.hpp"
 
 Grid::Grid(unsigned h, unsigned w): height{h}, width{w}, grid{new cell*[h]} {
   for (unsigned i = 0; i < height; i++) {
