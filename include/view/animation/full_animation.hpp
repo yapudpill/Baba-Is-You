@@ -6,17 +6,17 @@
 #include <SFML/Graphics/Texture.hpp>
 
 #include "model/util.hpp"
-#include "view/animated_sprite.hpp"
-#include "view/directed_sprite.hpp"
+#include "view/animation/animated_sprite.hpp"
+#include "view/animation/directed_sprite.hpp"
 
 class FullAnimation: public DirectedSprite, public AnimatedSprite {
   public:
     FullAnimation(const sf::Texture &sheet, sf::IntRect base, int gap, unsigned frames);
-    sf::Sprite getSprite(Direction d) override;
+    sf::Sprite getSprite(Direction d) const override;
     void operator++() override;
 
   protected:
-    int getOffset(Direction d) override;
+    int getOffset(Direction d) const override;
 };
 
 #endif // FULL_ANIMATION_HPP

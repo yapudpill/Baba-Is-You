@@ -1,4 +1,4 @@
-#include "view/animated_sprite.hpp"
+#include "view/animation/animated_sprite.hpp"
 
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/Sprite.hpp>
@@ -9,7 +9,7 @@
 AnimatedSprite::AnimatedSprite(const sf::Texture &sheet, sf::IntRect base, int gap, unsigned frames):
   Animation{sheet, base}, current_rect{base_rect}, gap{gap}, frames{frames} {}
 
-sf::Sprite AnimatedSprite::getSprite(Direction) {
+sf::Sprite AnimatedSprite::getSprite(Direction) const {
   return {spritesheet, current_rect};
 }
 

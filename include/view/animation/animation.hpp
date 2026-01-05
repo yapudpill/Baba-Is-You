@@ -10,12 +10,12 @@ class Animation {
   public:
     Animation(const sf::Texture &sheet, sf::IntRect base);
     virtual ~Animation() = default;
-    virtual sf::Sprite getSprite(Direction d) = 0;
+    virtual sf::Sprite getSprite(Direction d) const = 0;
     virtual void operator++() = 0;
 
   protected:
     const sf::Texture &spritesheet;
-    sf::IntRect base_rect;
+    mutable sf::IntRect base_rect;
 };
 
 #endif // ANIMATION_HPP

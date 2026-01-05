@@ -6,12 +6,12 @@
 #include <SFML/Graphics/Texture.hpp>
 
 #include "model/util.hpp"
-#include "view/animation.hpp"
+#include "view/animation/animation.hpp"
 
 class AnimatedSprite: public Animation {
   public:
     AnimatedSprite(const sf::Texture &sheet, sf::IntRect base, int gap, unsigned frames);
-    sf::Sprite getSprite(Direction d) override;
+    sf::Sprite getSprite(Direction d) const override;
     void operator++() override;
 
   protected:

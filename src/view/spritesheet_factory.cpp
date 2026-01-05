@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <map>
 #include <stdexcept>
 #include <string>
@@ -13,6 +14,8 @@ const std::vector<sf::Color> background_colors{
   sf::Color{0x54a54bff},
   sf::Color{0x1b5999ff}
 };
+
+const sf::Vector2i SpritesheetFactory::sprite_size{24,24};
 
 // Cache of the already loaded textures
 std::map<std::string, sf::Texture> cache;

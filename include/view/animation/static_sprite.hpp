@@ -4,12 +4,12 @@
 #include <SFML/Graphics/Sprite.hpp>
 
 #include "model/util.hpp"
-#include "view/animation.hpp"
+#include "view/animation/animation.hpp"
 
 class StaticSprite: public Animation {
   public:
     StaticSprite(const sf::Texture &sheet, sf::IntRect base);
-    sf::Sprite getSprite(Direction d) override;
+    sf::Sprite getSprite(Direction d) const override;
     void operator++() override;
 };
 

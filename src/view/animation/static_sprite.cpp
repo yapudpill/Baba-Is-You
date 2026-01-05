@@ -1,4 +1,4 @@
-#include "view/static_sprite.hpp"
+#include "view/animation/static_sprite.hpp"
 
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/Sprite.hpp>
@@ -9,7 +9,7 @@
 StaticSprite::StaticSprite(const sf::Texture &sheet, sf::IntRect base):
   Animation{sheet, base} {}
 
-sf::Sprite StaticSprite::getSprite(Direction) {
+sf::Sprite StaticSprite::getSprite(Direction) const {
   return {spritesheet, base_rect};
 }
 
