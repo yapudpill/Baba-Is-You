@@ -18,12 +18,13 @@ class Game final {
     Game &operator=(Game &&other);
 
     const Grid &getGrid() const { return grid; }
+    bool isWin() const { return win; }
     void move(Direction d);
     void undo();
     void redo();
 
-    bool win = false;
   private:
+    bool win = false;
     History history;
     Grid grid;
     RuleManager rules;

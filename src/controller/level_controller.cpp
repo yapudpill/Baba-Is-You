@@ -42,5 +42,5 @@ void LevelController::onKeyPressed(sf::Keyboard::Key code) {
     default:;
   }
 
-  if (game.win) main_controller.loadMenu();
+  if (game.isWin()) main_controller.loadMenu();
 }
