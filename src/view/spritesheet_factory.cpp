@@ -12,7 +12,8 @@
 const std::string prefix = "resource/image/";
 const std::vector<sf::Color> background_colors{
   sf::Color{0x54a54bff},
-  sf::Color{0x1b5999ff}
+  sf::Color{0x1b5999ff},
+  sf::Color{0x3a6f33ff}
 };
 
 const sf::Vector2i SpritesheetFactory::sprite_size{24,24};
