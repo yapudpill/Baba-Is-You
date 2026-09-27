@@ -2,6 +2,11 @@
 
 *Par Anthony Fernandes et Gabriel Choucroun, binôme n°89*
 
+![](rapport/niveau.png)
+
+Le sujet du projet est le fichier [sujet.pdf](sujet.pdf) et le rapport se trouve
+dans le fichier [rapport/rapport.pdf](rapport/rapport.pdf).
+
 ## Compilation et execution
 
 ```bash
